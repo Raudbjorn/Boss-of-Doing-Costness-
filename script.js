@@ -28,6 +28,24 @@ const inputs = {
     otherMonthlyCosts: document.getElementById('otherMonthlyCosts')
 };
 
+// Helper function to safely set HTML content (prevents XSS)
+function safeSetContent(elementId, htmlContent) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    // Clear existing content
+    element.textContent = '';
+
+    // Parse HTML string and create DOM elements
+    const temp = document.createElement('div');
+    temp.innerHTML = htmlContent;
+
+    // Move children to target element
+    while (temp.firstChild) {
+        element.appendChild(temp.firstChild);
+    }
+}
+
 // Add event listeners
 Object.values(inputs).forEach(input => {
     input.addEventListener('input', calculate);
@@ -464,7 +482,7 @@ function updateRecommendations(metrics) {
         `;
     });
     healthHTML += '</div>';
-    document.getElementById('healthMetrics').innerHTML = healthHTML;
+    safeSetContent('healthMetrics', healthHTML);
 
     // Recommendations
     let recsHTML = '';
@@ -551,7 +569,7 @@ function updateRecommendations(metrics) {
         `;
     }
 
-    document.getElementById('recommendations-content').innerHTML = recsHTML;
+    safeSetContent('recommendations-content', recsHTML);
 
     // Optimization opportunities
     let optHTML = '<div class="cost-breakdown">';
@@ -587,7 +605,7 @@ function updateRecommendations(metrics) {
     }
 
     optHTML += '</div>';
-    document.getElementById('optimization-content').innerHTML = optHTML;
+    safeSetContent('optimization-content', optHTML);
 
     // Risk assessment
     let riskHTML = '';
@@ -609,7 +627,7 @@ function updateRecommendations(metrics) {
         });
     }
 
-    document.getElementById('risk-content').innerHTML = riskHTML;
+    safeSetContent('risk-content', riskHTML);
 }
 
 // Initial calculation
