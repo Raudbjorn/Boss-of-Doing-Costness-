@@ -458,10 +458,13 @@ select:focus {
                             <strong>💡 AWS-Style Usage-Based Pricing</strong><br>
                             <span style="font-size: 13px; color: #555;">
                                 Like AWS revolutionized infrastructure: pay only for what you use.<br>
-                                • <strong>Storage:</strong> $0.08/GB/month (vs S3's ~$0.023/GB)<br>
-                                • <strong>Bandwidth:</strong> $0.12/GB (vs CloudFront's ~$0.085/GB)<br>
-                                • <strong>Base platform fee:</strong> $99/month (access, search, tools)<br>
-                                <em>Perfect for projects with variable intensity (heavy pre-production, quiet during shooting)</em>
+                                • <strong>Storage:</strong> $0.08/GB/month (raw AWS S3: ~$0.023/GB)<br>
+                                • <strong>Bandwidth:</strong> $0.12/GB (raw AWS CloudFront: ~$0.085/GB)<br>
+                                • <strong>Base platform fee:</strong> $99/month (platform access, search UI, collaboration tools, support)<br>
+                                <span style="color: #1976d2; font-size: 12px; display: block; margin-top: 8px;">
+                                    <em>Note: Our pricing includes managed services, security, metadata management, collaboration features, and support—not just raw storage/bandwidth like AWS infrastructure.</em>
+                                </span>
+                                <em style="display: block; margin-top: 8px;">Perfect for projects with variable intensity (heavy pre-production, quiet during shooting)</em>
                             </span>
                         </div>
 
@@ -1194,15 +1197,16 @@ function calculateAllMetrics(currentInputs) {
 
     if (pricingModel === 'usage') {
         // AWS-style usage-based pricing
-        const usageStorageRevenue = totalStorageGB * USAGE_STORAGE_PER_GB * customers;
-        const usageBandwidthRevenue = totalImageBandwidthGB * USAGE_BANDWIDTH_PER_GB * customers;
+        // Note: totalStorageGB and totalImageBandwidthGB are already aggregates across all customers
+        const usageStorageRevenue = totalStorageGB * USAGE_STORAGE_PER_GB;
+        const usageBandwidthRevenue = totalImageBandwidthGB * USAGE_BANDWIDTH_PER_GB;
         const baseFeeRevenue = USAGE_BASE_FEE * customers;
         monthlyRevenue = baseFeeRevenue + usageStorageRevenue + usageBandwidthRevenue + projectFeeRevenue;
     } else if (pricingModel === 'hybrid') {
-        // Hybrid: 50% base tier + usage fees for overages
-        const baseRevenue = (customers * pricePerCustomer * 0.5);
-        const usageStorageRevenue = totalStorageGB * USAGE_STORAGE_PER_GB * customers * 0.5;
-        const usageBandwidthRevenue = totalImageBandwidthGB * USAGE_BANDWIDTH_PER_GB * customers * 0.5;
+        // Hybrid: 50% discount on base subscription fee + usage charges for aggregate usage
+        const baseRevenue = customers * pricePerCustomer * 0.5;
+        const usageStorageRevenue = totalStorageGB * USAGE_STORAGE_PER_GB * 0.5;
+        const usageBandwidthRevenue = totalImageBandwidthGB * USAGE_BANDWIDTH_PER_GB * 0.5;
         monthlyRevenue = baseRevenue + usageStorageRevenue + usageBandwidthRevenue + projectFeeRevenue;
     } else {
         // Tiered subscription (traditional SaaS)
