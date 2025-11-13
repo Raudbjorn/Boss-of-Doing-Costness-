@@ -445,12 +445,36 @@ select:focus {
                                 <label for="pricingTier">Pricing Tier</label>
                                 <select id="pricingTier" onchange="updatePricingTier()">
                                     <option value="custom">Custom Pricing</option>
+                                    <option value="free">Free Tier (Always Free)</option>
+                                    <option value="starter">Starter ($29/month)</option>
                                     <option value="freelancer">Freelancer ($149/month)</option>
                                     <option value="professional" selected>Professional ($499/month)</option>
                                     <option value="studio">Studio ($1,499/month)</option>
                                     <option value="enterprise">Enterprise ($3,999/month)</option>
                                 </select>
-                                <div class="info-text">Fixed monthly subscription tiers</div>
+                                <div class="info-text">Fixed monthly subscription tiers (AWS-style free tier available)</div>
+                            </div>
+
+                            <div id="freemiumSection" style="display: none; background: #e8f9f0; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #28a745;">
+                                <strong>🎁 Free Tier Strategy (AWS-style)</strong><br>
+                                <span style="font-size: 13px; color: #555;">
+                                    Like AWS Free Tier - get users hooked, convert to paid:<br>
+                                    • <strong>Limits:</strong> 25 locations, 10 images each, 1GB storage<br>
+                                    • <strong>Perfect for:</strong> Film students, indie shorts, testing platform<br>
+                                    • <strong>Conversion goal:</strong> 2-5% to paid tiers within 90 days<br>
+                                    • <strong>Cost per free user:</strong> ~$0.50-2/month infrastructure
+                                </span>
+                            </div>
+
+                            <div id="starterSection" style="display: none; background: #fff3cd; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #ffc107;">
+                                <strong>🚀 Starter Tier (Like Lightsail)</strong><br>
+                                <span style="font-size: 13px; color: #555;">
+                                    Ultra-simple, ultra-cheap entry point:<br>
+                                    • <strong>$29/month flat</strong> - no surprises, no overages<br>
+                                    • <strong>Limits:</strong> 50 locations, 15 images each, 5GB storage<br>
+                                    • <strong>Perfect for:</strong> Solo location scouts, small indie films<br>
+                                    • <strong>Value prop:</strong> Coffee shop price for professional tool
+                                </span>
                             </div>
                         </div>
 
@@ -496,6 +520,34 @@ select:focus {
                             <label for="monthlyGrowth">Monthly Growth Rate (%)</label>
                             <input type="number" id="monthlyGrowth" value="8" min="0" max="1000" step="1">
                             <div class="info-text">New client acquisition rate</div>
+                        </div>
+                    </div>
+
+                    <div class="section" id="freemiumMetrics" style="display: none;">
+                        <h2>Freemium Strategy Metrics</h2>
+
+                        <div class="input-group">
+                            <label for="freeUsers">Number of Free Tier Users</label>
+                            <input type="number" id="freeUsers" value="500" min="0" step="50">
+                            <div class="info-text">Film students, indie filmmakers, trial users</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="conversionRate">Free → Paid Conversion Rate (%)</label>
+                            <input type="number" id="conversionRate" value="3" min="0" max="100" step="0.5">
+                            <div class="info-text">AWS achieves 2-5% after 90 days; SaaS average 2-4%</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="avgConversionTime">Avg Days to Convert</label>
+                            <input type="number" id="avgConversionTime" value="60" min="0" max="365" step="10">
+                            <div class="info-text">How long before free users upgrade</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="costPerFreeUser">Cost per Free User ($/month)</label>
+                            <input type="number" id="costPerFreeUser" value="1.5" min="0" max="10" step="0.5">
+                            <div class="info-text">Infrastructure, support, bandwidth for free tier</div>
                         </div>
                     </div>
 
@@ -1009,6 +1061,14 @@ const USAGE_BASE_FEE = 99; // Monthly platform access fee
 const USAGE_STORAGE_PER_GB = 0.08; // Per GB/month storage
 const USAGE_BANDWIDTH_PER_GB = 0.12; // Per GB bandwidth
 
+// Pricing tiers
+const TIER_FREE = 0; // Always free tier
+const TIER_STARTER = 29; // Like Lightsail - ultra-cheap entry
+const TIER_FREELANCER = 149;
+const TIER_PROFESSIONAL = 499;
+const TIER_STUDIO = 1499;
+const TIER_ENTERPRISE = 3999;
+
 // Get all input elements
 const inputs = {
     customerSegment: document.getElementById('customerSegment'),
@@ -1029,7 +1089,11 @@ const inputs = {
     vercelBandwidthMultiplier: document.getElementById('vercelBandwidthMultiplier'),
     employeeSalaries: document.getElementById('employeeSalaries'),
     marketingSpend: document.getElementById('marketingSpend'),
-    otherMonthlyCosts: document.getElementById('otherMonthlyCosts')
+    otherMonthlyCosts: document.getElementById('otherMonthlyCosts'),
+    freeUsers: document.getElementById('freeUsers'),
+    conversionRate: document.getElementById('conversionRate'),
+    avgConversionTime: document.getElementById('avgConversionTime'),
+    costPerFreeUser: document.getElementById('costPerFreeUser')
 };
 
 // Helper function to safely set HTML content (prevents XSS)
@@ -1080,17 +1144,29 @@ function updateSegmentDefaults() {
 // Pricing tier presets
 function updatePricingTier() {
     const tier = inputs.pricingTier.value;
+    const freemiumSection = document.getElementById('freemiumSection');
+    const starterSection = document.getElementById('starterSection');
+    const freemiumMetrics = document.getElementById('freemiumMetrics');
+
     const tiers = {
-        freelancer: { price: 149, setup: 0, churn: 8 },
-        professional: { price: 499, setup: 500, churn: 3 },
-        studio: { price: 1499, setup: 1000, churn: 2 },
-        enterprise: { price: 3999, setup: 5000, churn: 1 }
+        free: { price: 0, setup: 0, churn: 15, showFreemium: true, showStarter: false, showMetrics: true },
+        starter: { price: 29, setup: 0, churn: 10, showFreemium: false, showStarter: true, showMetrics: false },
+        freelancer: { price: 149, setup: 0, churn: 8, showFreemium: false, showStarter: false, showMetrics: false },
+        professional: { price: 499, setup: 500, churn: 3, showFreemium: false, showStarter: false, showMetrics: false },
+        studio: { price: 1499, setup: 1000, churn: 2, showFreemium: false, showStarter: false, showMetrics: false },
+        enterprise: { price: 3999, setup: 5000, churn: 1, showFreemium: false, showStarter: false, showMetrics: false }
     };
 
     if (tiers[tier]) {
         inputs.pricePerCustomer.value = tiers[tier].price;
         inputs.setupFee.value = tiers[tier].setup;
         inputs.monthlyChurn.value = tiers[tier].churn;
+
+        // Show/hide freemium and starter info boxes
+        freemiumSection.style.display = tiers[tier].showFreemium ? 'block' : 'none';
+        starterSection.style.display = tiers[tier].showStarter ? 'block' : 'none';
+        freemiumMetrics.style.display = tiers[tier].showMetrics ? 'block' : 'none';
+
         calculate();
     }
 }
@@ -1154,7 +1230,11 @@ function getInputs() {
         vercelBandwidthMultiplier: parseFloat(inputs.vercelBandwidthMultiplier.value) || 0,
         employeeSalaries: parseFloat(inputs.employeeSalaries.value) || 0,
         marketingSpend: parseFloat(inputs.marketingSpend.value) || 0,
-        otherMonthlyCosts: parseFloat(inputs.otherMonthlyCosts.value) || 0
+        otherMonthlyCosts: parseFloat(inputs.otherMonthlyCosts.value) || 0,
+        freeUsers: parseFloat(inputs.freeUsers.value) || 0,
+        conversionRate: parseFloat(inputs.conversionRate.value) || 0,
+        avgConversionTime: parseFloat(inputs.avgConversionTime.value) || 0,
+        costPerFreeUser: parseFloat(inputs.costPerFreeUser.value) || 0
     };
 }
 
@@ -1162,7 +1242,8 @@ function calculateAllMetrics(currentInputs) {
     const {
         customers, locationsPerCustomer, imagesPerLocation, avgImageSize, monthlyViewsPerImage,
         pricePerCustomer, setupFee, projectFeeRevenue, monthlyChurn, monthlyGrowth, useVercel, vercelTeamMembers,
-        vercelBandwidthMultiplier, employeeSalaries, marketingSpend, otherMonthlyCosts
+        vercelBandwidthMultiplier, employeeSalaries, marketingSpend, otherMonthlyCosts,
+        freeUsers, conversionRate, avgConversionTime, costPerFreeUser
     } = currentInputs;
 
     // Calculate storage and bandwidth
@@ -1185,11 +1266,17 @@ function calculateAllMetrics(currentInputs) {
     const vercelBandwidthCost = vercelBandwidthOverageGB * VERCEL_BANDWIDTH_COST;
     const vercelTotalCost = vercelBaseCost + vercelBandwidthCost;
 
+    // Freemium costs (AWS free tier strategy)
+    const freemiumCosts = freeUsers * costPerFreeUser;
+    const monthlyConversions = freeUsers * (conversionRate / 100);
+    const expectedConversionRevenue = monthlyConversions * pricePerCustomer;
+    const freemiumROI = freemiumCosts > 0 ? expectedConversionRevenue / freemiumCosts : 0;
+
     // Total costs
     const otherTotalCosts = employeeSalaries + marketingSpend + otherMonthlyCosts;
-    const totalCosts = supabaseTotalCost + vercelTotalCost + otherTotalCosts;
+    const totalCosts = supabaseTotalCost + vercelTotalCost + otherTotalCosts + freemiumCosts;
     const fixedCosts = SUPABASE_PRO_BASE + vercelBaseCost + employeeSalaries + otherMonthlyCosts;
-    const variableCosts = storageCost + egressCost + vercelBandwidthCost + marketingSpend;
+    const variableCosts = storageCost + egressCost + vercelBandwidthCost + marketingSpend + freemiumCosts;
 
     // Revenue calculations - handle different pricing models
     const pricingModel = inputs.pricingModel ? inputs.pricingModel.value : 'tiered';
@@ -1245,11 +1332,13 @@ function calculateAllMetrics(currentInputs) {
         storageOverageGB, storageCost, egressOverageGB, egressCost, supabaseTotalCost,
         vercelBaseCost, vercelBandwidthOverageGB, vercelBandwidthCost, vercelTotalCost,
         otherTotalCosts, totalCosts, fixedCosts, variableCosts,
+        freemiumCosts, monthlyConversions, expectedConversionRevenue, freemiumROI,
         monthlyRevenue, netProfit, profitMargin,
         costPerCustomer, profitPerCustomer, unitEconomicsRatio,
         avgCustomerLifetimeMonths, ltv, newCustomers, cac, ltvCacRatio, cacPayback,
         infrastructureCosts, grossMargin,
-        breakEvenCustomers, breakEvenMRR, monthsToBreakEven
+        breakEvenCustomers, breakEvenMRR, monthsToBreakEven,
+        freeUsers, conversionRate
     };
 }
 
