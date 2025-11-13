@@ -382,33 +382,48 @@ select:focus {
                 <!-- Left Column: Inputs -->
                 <div>
                     <div class="section">
-                        <h2>Platform Usage</h2>
+                        <h2>Customer Segment & Usage</h2>
 
                         <div class="input-group">
-                            <label for="customers">Number of Customers</label>
-                            <input type="number" id="customers" value="100" min="0" step="1">
+                            <label for="customerSegment">Primary Customer Type</label>
+                            <select id="customerSegment" onchange="updateSegmentDefaults()">
+                                <option value="production_company">Production Company (Film/TV)</option>
+                                <option value="ad_agency">Advertising Agency</option>
+                                <option value="location_scout">Location Scout/Freelancer</option>
+                                <option value="streaming_platform">Streaming Platform/Network</option>
+                                <option value="indie_filmmaker">Independent Filmmaker</option>
+                            </select>
+                            <div class="info-text">Adjusts pricing and usage assumptions</div>
                         </div>
 
                         <div class="input-group">
-                            <label for="locationsPerCustomer">Locations per Customer (avg)</label>
-                            <input type="number" id="locationsPerCustomer" value="10" min="0" step="1">
+                            <label for="customers">Number of Active Clients</label>
+                            <input type="number" id="customers" value="50" min="0" step="1">
+                            <div class="info-text">Production companies, agencies, or individual subscribers</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="locationsPerCustomer">Locations per Client (avg)</label>
+                            <input type="number" id="locationsPerCustomer" value="150" min="0" step="10">
+                            <div class="info-text">Location database size per client</div>
                         </div>
 
                         <div class="input-group">
                             <label for="imagesPerLocation">Images per Location (avg)</label>
-                            <input type="number" id="imagesPerLocation" value="20" min="0" step="1">
+                            <input type="number" id="imagesPerLocation" value="25" min="0" step="1">
+                            <div class="info-text">Interior/exterior shots, angles, details</div>
                         </div>
 
                         <div class="input-group">
                             <label for="avgImageSize">Average Image Size (MB)</label>
-                            <input type="number" id="avgImageSize" value="2" min="0" step="0.1">
-                            <div class="info-text">Typical: 1-3 MB for high-quality photos</div>
+                            <input type="number" id="avgImageSize" value="4" min="0" step="0.5">
+                            <div class="info-text">Film industry standard: 3-6 MB high-resolution</div>
                         </div>
 
                         <div class="input-group">
                             <label for="monthlyViewsPerImage">Monthly Views per Image (avg)</label>
-                            <input type="number" id="monthlyViewsPerImage" value="10" min="0" step="1">
-                            <div class="info-text">For bandwidth calculation</div>
+                            <input type="number" id="monthlyViewsPerImage" value="5" min="0" step="1">
+                            <div class="info-text">Scouting reviews, client presentations, portfolio browsing</div>
                         </div>
                     </div>
 
@@ -416,26 +431,45 @@ select:focus {
                         <h2>Pricing & Revenue</h2>
 
                         <div class="input-group">
-                            <label for="pricePerCustomer">Price per Customer per Month ($)</label>
-                            <input type="number" id="pricePerCustomer" value="49" min="0" step="1">
+                            <label for="pricingTier">Pricing Tier</label>
+                            <select id="pricingTier" onchange="updatePricingTier()">
+                                <option value="custom">Custom Pricing</option>
+                                <option value="freelancer">Freelancer ($149/month)</option>
+                                <option value="professional" selected>Professional ($499/month)</option>
+                                <option value="studio">Studio ($1,499/month)</option>
+                                <option value="enterprise">Enterprise ($3,999/month)</option>
+                            </select>
+                            <div class="info-text">Quick presets for common film industry tiers</div>
                         </div>
 
                         <div class="input-group">
-                            <label for="setupFee">One-time Setup Fee ($)</label>
-                            <input type="number" id="setupFee" value="0" min="0" step="1">
-                            <div class="info-text">Charged once per new customer</div>
+                            <label for="pricePerCustomer">Price per Client per Month ($)</label>
+                            <input type="number" id="pricePerCustomer" value="499" min="0" step="10">
+                            <div class="info-text">Average subscription price across all clients</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="setupFee">Onboarding/Setup Fee ($)</label>
+                            <input type="number" id="setupFee" value="500" min="0" step="50">
+                            <div class="info-text">One-time fee for data migration, training, customization</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="projectFeeRevenue">Monthly Project-Based Revenue ($)</label>
+                            <input type="number" id="projectFeeRevenue" value="0" min="0" step="100">
+                            <div class="info-text">Additional revenue from freelancer/single-project access</div>
                         </div>
 
                         <div class="input-group">
                             <label for="monthlyChurn">Monthly Churn Rate (%)</label>
-                            <input type="number" id="monthlyChurn" value="5" min="0" max="100" step="0.1">
-                            <div class="info-text">Percentage of customers who cancel each month</div>
+                            <input type="number" id="monthlyChurn" value="3" min="0" max="100" step="0.5">
+                            <div class="info-text">Film industry typically has lower churn (long contracts)</div>
                         </div>
 
                         <div class="input-group">
                             <label for="monthlyGrowth">Monthly Growth Rate (%)</label>
-                            <input type="number" id="monthlyGrowth" value="10" min="0" max="1000" step="1">
-                            <div class="info-text">New customer acquisition rate</div>
+                            <input type="number" id="monthlyGrowth" value="8" min="0" max="1000" step="1">
+                            <div class="info-text">New client acquisition rate</div>
                         </div>
                     </div>
 
@@ -464,19 +498,21 @@ select:focus {
                         <h2>Additional Costs</h2>
 
                         <div class="input-group">
-                            <label for="employeeSalaries">Monthly Salaries/Contractors ($)</label>
-                            <input type="number" id="employeeSalaries" value="0" min="0" step="100">
+                            <label for="employeeSalaries">Monthly Team Costs ($)</label>
+                            <input type="number" id="employeeSalaries" value="15000" min="0" step="1000">
+                            <div class="info-text">Developers, customer success, location curators</div>
                         </div>
 
                         <div class="input-group">
-                            <label for="marketingSpend">Monthly Marketing Spend ($)</label>
-                            <input type="number" id="marketingSpend" value="0" min="0" step="100">
+                            <label for="marketingSpend">Monthly Sales & Marketing ($)</label>
+                            <input type="number" id="marketingSpend" value="3000" min="0" step="500">
+                            <div class="info-text">Film festival presence, trade shows, partnerships</div>
                         </div>
 
                         <div class="input-group">
-                            <label for="otherMonthlyCosts">Other Monthly Costs ($)</label>
-                            <input type="number" id="otherMonthlyCosts" value="0" min="0" step="1">
-                            <div class="info-text">Domain, email, analytics, etc.</div>
+                            <label for="otherMonthlyCosts">Other Operating Costs ($)</label>
+                            <input type="number" id="otherMonthlyCosts" value="500" min="0" step="100">
+                            <div class="info-text">Legal (contracts/licensing), insurance, tools</div>
                         </div>
                     </div>
                 </div>
@@ -940,13 +976,16 @@ const VERCEL_BANDWIDTH_COST = 0.15;
 
 // Get all input elements
 const inputs = {
+    customerSegment: document.getElementById('customerSegment'),
     customers: document.getElementById('customers'),
     locationsPerCustomer: document.getElementById('locationsPerCustomer'),
     imagesPerLocation: document.getElementById('imagesPerLocation'),
     avgImageSize: document.getElementById('avgImageSize'),
     monthlyViewsPerImage: document.getElementById('monthlyViewsPerImage'),
+    pricingTier: document.getElementById('pricingTier'),
     pricePerCustomer: document.getElementById('pricePerCustomer'),
     setupFee: document.getElementById('setupFee'),
+    projectFeeRevenue: document.getElementById('projectFeeRevenue'),
     monthlyChurn: document.getElementById('monthlyChurn'),
     monthlyGrowth: document.getElementById('monthlyGrowth'),
     useVercel: document.getElementById('useVercel'),
@@ -981,6 +1020,45 @@ Object.values(inputs).forEach(input => {
     input.addEventListener('change', calculate);
 });
 
+// Customer segment presets
+function updateSegmentDefaults() {
+    const segment = inputs.customerSegment.value;
+    const presets = {
+        production_company: { locations: 150, images: 25, views: 5, price: 499, churn: 3 },
+        ad_agency: { locations: 300, images: 20, views: 15, price: 999, churn: 4 },
+        location_scout: { locations: 500, images: 30, views: 3, price: 199, churn: 8 },
+        streaming_platform: { locations: 100, images: 25, views: 8, price: 2999, churn: 2 },
+        indie_filmmaker: { locations: 50, images: 20, views: 2, price: 149, churn: 10 }
+    };
+
+    if (presets[segment]) {
+        inputs.locationsPerCustomer.value = presets[segment].locations;
+        inputs.imagesPerLocation.value = presets[segment].images;
+        inputs.monthlyViewsPerImage.value = presets[segment].views;
+        inputs.pricePerCustomer.value = presets[segment].price;
+        inputs.monthlyChurn.value = presets[segment].churn;
+        calculate();
+    }
+}
+
+// Pricing tier presets
+function updatePricingTier() {
+    const tier = inputs.pricingTier.value;
+    const tiers = {
+        freelancer: { price: 149, setup: 0, churn: 8 },
+        professional: { price: 499, setup: 500, churn: 3 },
+        studio: { price: 1499, setup: 1000, churn: 2 },
+        enterprise: { price: 3999, setup: 5000, churn: 1 }
+    };
+
+    if (tiers[tier]) {
+        inputs.pricePerCustomer.value = tiers[tier].price;
+        inputs.setupFee.value = tiers[tier].setup;
+        inputs.monthlyChurn.value = tiers[tier].churn;
+        calculate();
+    }
+}
+
 function switchTab(event, tabName) {
     // Hide all tabs
     document.querySelectorAll('.tab-content').forEach(content => {
@@ -1007,6 +1085,7 @@ function getInputs() {
         monthlyViewsPerImage: parseFloat(inputs.monthlyViewsPerImage.value) || 0,
         pricePerCustomer: parseFloat(inputs.pricePerCustomer.value) || 0,
         setupFee: parseFloat(inputs.setupFee.value) || 0,
+        projectFeeRevenue: parseFloat(inputs.projectFeeRevenue.value) || 0,
         monthlyChurn: parseFloat(inputs.monthlyChurn.value) || 0,
         monthlyGrowth: parseFloat(inputs.monthlyGrowth.value) || 0,
         useVercel: inputs.useVercel.checked,
@@ -1021,7 +1100,7 @@ function getInputs() {
 function calculateAllMetrics(currentInputs) {
     const {
         customers, locationsPerCustomer, imagesPerLocation, avgImageSize, monthlyViewsPerImage,
-        pricePerCustomer, setupFee, monthlyChurn, monthlyGrowth, useVercel, vercelTeamMembers,
+        pricePerCustomer, setupFee, projectFeeRevenue, monthlyChurn, monthlyGrowth, useVercel, vercelTeamMembers,
         vercelBandwidthMultiplier, employeeSalaries, marketingSpend, otherMonthlyCosts
     } = currentInputs;
 
@@ -1052,7 +1131,7 @@ function calculateAllMetrics(currentInputs) {
     const variableCosts = storageCost + egressCost + vercelBandwidthCost + marketingSpend;
 
     // Revenue calculations
-    const monthlyRevenue = customers * pricePerCustomer;
+    const monthlyRevenue = (customers * pricePerCustomer) + projectFeeRevenue;
     const netProfit = monthlyRevenue - totalCosts;
     const profitMargin = monthlyRevenue > 0 ? (netProfit / monthlyRevenue * 100) : 0;
 
