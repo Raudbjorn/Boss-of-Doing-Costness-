@@ -366,7 +366,7 @@ select:focus {
     <div class="container">
         <header>
             <h1>Film Location Database Platform - Business Calculator</h1>
-            <p class="subtitle">Comprehensive financial analysis for film industry location management platform</p>
+            <p class="subtitle">AWS-style "pay for what you use" pricing • Scale up during pre-production, scale down during shooting</p>
         </header>
 
         <div class="tabs">
@@ -428,18 +428,41 @@ select:focus {
                     </div>
 
                     <div class="section">
-                        <h2>Pricing & Revenue</h2>
+                        <h2>Pricing & Revenue Models</h2>
 
                         <div class="input-group">
-                            <label for="pricingTier">Pricing Tier</label>
-                            <select id="pricingTier" onchange="updatePricingTier()">
-                                <option value="custom">Custom Pricing</option>
-                                <option value="freelancer">Freelancer ($149/month)</option>
-                                <option value="professional" selected>Professional ($499/month)</option>
-                                <option value="studio">Studio ($1,499/month)</option>
-                                <option value="enterprise">Enterprise ($3,999/month)</option>
+                            <label for="pricingModel">Pricing Model</label>
+                            <select id="pricingModel" onchange="updatePricingModel()">
+                                <option value="tiered" selected>Tiered Subscription (Traditional SaaS)</option>
+                                <option value="usage">AWS-Style Pay-As-You-Grow</option>
+                                <option value="hybrid">Hybrid (Base + Usage)</option>
                             </select>
-                            <div class="info-text">Quick presets for common film industry tiers</div>
+                            <div class="info-text">Compare traditional tiers vs. usage-based pricing</div>
+                        </div>
+
+                        <div id="tieredPricingSection">
+                            <div class="input-group">
+                                <label for="pricingTier">Pricing Tier</label>
+                                <select id="pricingTier" onchange="updatePricingTier()">
+                                    <option value="custom">Custom Pricing</option>
+                                    <option value="freelancer">Freelancer ($149/month)</option>
+                                    <option value="professional" selected>Professional ($499/month)</option>
+                                    <option value="studio">Studio ($1,499/month)</option>
+                                    <option value="enterprise">Enterprise ($3,999/month)</option>
+                                </select>
+                                <div class="info-text">Fixed monthly subscription tiers</div>
+                            </div>
+                        </div>
+
+                        <div id="usagePricingInfo" style="display: none; background: #e8f4f8; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #2196F3;">
+                            <strong>💡 AWS-Style Usage-Based Pricing</strong><br>
+                            <span style="font-size: 13px; color: #555;">
+                                Like AWS revolutionized infrastructure: pay only for what you use.<br>
+                                • <strong>Storage:</strong> $0.08/GB/month (vs S3's ~$0.023/GB)<br>
+                                • <strong>Bandwidth:</strong> $0.12/GB (vs CloudFront's ~$0.085/GB)<br>
+                                • <strong>Base platform fee:</strong> $99/month (access, search, tools)<br>
+                                <em>Perfect for projects with variable intensity (heavy pre-production, quiet during shooting)</em>
+                            </span>
                         </div>
 
                         <div class="input-group">
@@ -545,9 +568,13 @@ select:focus {
 
                     <div class="section">
                         <h2>Cost Breakdown</h2>
+                        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+                            ☁️ <strong>AWS-Style Infrastructure:</strong> Like AWS S3 + CloudFront, you pay a base fee + usage overages.
+                            Costs scale automatically with your location library size and scouting activity.
+                        </p>
 
                         <div class="cost-breakdown">
-                            <h3>Supabase Costs</h3>
+                            <h3>Supabase Costs (Storage & Bandwidth)</h3>
                             <div class="breakdown-row">
                                 <span>Pro Plan Base</span>
                                 <span>$<span id="baseCost">120.00</span></span>
@@ -567,7 +594,7 @@ select:focus {
                         </div>
 
                         <div class="cost-breakdown">
-                            <h3>Vercel Costs</h3>
+                            <h3>Vercel Costs (Frontend Hosting)</h3>
                             <div class="breakdown-row">
                                 <span>Pro Plan (<span id="vercelSeats">1</span> seats @ $20/seat)</span>
                                 <span>$<span id="vercelBaseCost">20.00</span></span>
@@ -974,9 +1001,15 @@ const VERCEL_PRO_PER_SEAT = 20;
 const VERCEL_BANDWIDTH_INCLUDED = 1000; // 1TB = 1000GB
 const VERCEL_BANDWIDTH_COST = 0.15;
 
+// Usage-based pricing (AWS-style)
+const USAGE_BASE_FEE = 99; // Monthly platform access fee
+const USAGE_STORAGE_PER_GB = 0.08; // Per GB/month storage
+const USAGE_BANDWIDTH_PER_GB = 0.12; // Per GB bandwidth
+
 // Get all input elements
 const inputs = {
     customerSegment: document.getElementById('customerSegment'),
+    pricingModel: document.getElementById('pricingModel'),
     customers: document.getElementById('customers'),
     locationsPerCustomer: document.getElementById('locationsPerCustomer'),
     imagesPerLocation: document.getElementById('imagesPerLocation'),
@@ -1059,6 +1092,31 @@ function updatePricingTier() {
     }
 }
 
+// Pricing model selector
+function updatePricingModel() {
+    const model = document.getElementById('pricingModel').value;
+    const tieredSection = document.getElementById('tieredPricingSection');
+    const usageInfo = document.getElementById('usagePricingInfo');
+
+    if (model === 'tiered') {
+        tieredSection.style.display = 'block';
+        usageInfo.style.display = 'none';
+        // Use tier pricing
+        updatePricingTier();
+    } else if (model === 'usage') {
+        tieredSection.style.display = 'none';
+        usageInfo.style.display = 'block';
+        // Usage-based: $99 base + $0.08/GB storage + $0.12/GB bandwidth
+        inputs.pricePerCustomer.value = 99; // Base platform fee
+        calculate();
+    } else if (model === 'hybrid') {
+        tieredSection.style.display = 'block';
+        usageInfo.style.display = 'block';
+        // Hybrid: reduced base + usage
+        calculate();
+    }
+}
+
 function switchTab(event, tabName) {
     // Hide all tabs
     document.querySelectorAll('.tab-content').forEach(content => {
@@ -1130,8 +1188,27 @@ function calculateAllMetrics(currentInputs) {
     const fixedCosts = SUPABASE_PRO_BASE + vercelBaseCost + employeeSalaries + otherMonthlyCosts;
     const variableCosts = storageCost + egressCost + vercelBandwidthCost + marketingSpend;
 
-    // Revenue calculations
-    const monthlyRevenue = (customers * pricePerCustomer) + projectFeeRevenue;
+    // Revenue calculations - handle different pricing models
+    const pricingModel = inputs.pricingModel ? inputs.pricingModel.value : 'tiered';
+    let monthlyRevenue;
+
+    if (pricingModel === 'usage') {
+        // AWS-style usage-based pricing
+        const usageStorageRevenue = totalStorageGB * USAGE_STORAGE_PER_GB * customers;
+        const usageBandwidthRevenue = totalImageBandwidthGB * USAGE_BANDWIDTH_PER_GB * customers;
+        const baseFeeRevenue = USAGE_BASE_FEE * customers;
+        monthlyRevenue = baseFeeRevenue + usageStorageRevenue + usageBandwidthRevenue + projectFeeRevenue;
+    } else if (pricingModel === 'hybrid') {
+        // Hybrid: 50% base tier + usage fees for overages
+        const baseRevenue = (customers * pricePerCustomer * 0.5);
+        const usageStorageRevenue = totalStorageGB * USAGE_STORAGE_PER_GB * customers * 0.5;
+        const usageBandwidthRevenue = totalImageBandwidthGB * USAGE_BANDWIDTH_PER_GB * customers * 0.5;
+        monthlyRevenue = baseRevenue + usageStorageRevenue + usageBandwidthRevenue + projectFeeRevenue;
+    } else {
+        // Tiered subscription (traditional SaaS)
+        monthlyRevenue = (customers * pricePerCustomer) + projectFeeRevenue;
+    }
+
     const netProfit = monthlyRevenue - totalCosts;
     const profitMargin = monthlyRevenue > 0 ? (netProfit / monthlyRevenue * 100) : 0;
 
