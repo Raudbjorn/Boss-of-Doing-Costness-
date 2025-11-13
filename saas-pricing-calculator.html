@@ -436,8 +436,34 @@ select:focus {
                                 <option value="tiered" selected>Tiered Subscription (Traditional SaaS)</option>
                                 <option value="usage">AWS-Style Pay-As-You-Grow</option>
                                 <option value="hybrid">Hybrid (Base + Usage)</option>
+                                <option value="backup">Backup/Archive (IBM Cloud Strategy)</option>
                             </select>
-                            <div class="info-text">Compare traditional tiers vs. usage-based pricing</div>
+                            <div class="info-text">Late-market entry strategies: freemium, usage, or backup positioning</div>
+                        </div>
+
+                        <div id="backupStrategyInfo" style="display: none; background: #fff3e0; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #ff9800;">
+                            <strong>💾 Backup/Archive Strategy (IBM Cloud Approach)</strong><br>
+                            <span style="font-size: 13px; color: #555;">
+                                <strong>Target: Customers already using competitors</strong> (Photoshelter, Widen, SmugMug Pro)<br>
+                                IBM offered free ingress/egress to become "backup cloud" - we do similar:<br>
+                                <br>
+                                <strong>Phase 1 - Foot in the Door:</strong><br>
+                                • <strong>Free unlimited migration</strong> from any competitor<br>
+                                • <strong>Free ongoing sync API</strong> - mirror their primary system<br>
+                                • <strong>50% discount "Archive tier"</strong> - disaster recovery positioning<br>
+                                • <strong>Zero lock-in</strong> - free unlimited export, all metadata<br>
+                                <br>
+                                <strong>Phase 2 - Demonstrate Value:</strong><br>
+                                • Film-specific features their current system lacks<br>
+                                • Faster search, better metadata, production workflows<br>
+                                • Side-by-side usage reveals our superiority<br>
+                                <br>
+                                <strong>Phase 3 - Role Reversal:</strong><br>
+                                • We become primary (6-12 months), they become archive<br>
+                                • Upgrade to full price once we're the primary system<br>
+                                <br>
+                                <em>Calculator models 50% discount for archive positioning</em>
+                            </span>
                         </div>
 
                         <div id="tieredPricingSection">
@@ -1176,23 +1202,34 @@ function updatePricingModel() {
     const model = document.getElementById('pricingModel').value;
     const tieredSection = document.getElementById('tieredPricingSection');
     const usageInfo = document.getElementById('usagePricingInfo');
+    const backupInfo = document.getElementById('backupStrategyInfo');
 
     if (model === 'tiered') {
         tieredSection.style.display = 'block';
         usageInfo.style.display = 'none';
+        backupInfo.style.display = 'none';
         // Use tier pricing
         updatePricingTier();
     } else if (model === 'usage') {
         tieredSection.style.display = 'none';
         usageInfo.style.display = 'block';
+        backupInfo.style.display = 'none';
         // Usage-based: $99 base + $0.08/GB storage + $0.12/GB bandwidth
         inputs.pricePerCustomer.value = 99; // Base platform fee
         calculate();
     } else if (model === 'hybrid') {
         tieredSection.style.display = 'block';
         usageInfo.style.display = 'block';
+        backupInfo.style.display = 'none';
         // Hybrid: reduced base + usage
         calculate();
+    } else if (model === 'backup') {
+        tieredSection.style.display = 'block';
+        usageInfo.style.display = 'none';
+        backupInfo.style.display = 'block';
+        // Backup/Archive: 50% discount on selected tier for late-market positioning
+        // Keep current tier selection, will apply discount in revenue calculation
+        updatePricingTier();
     }
 }
 
@@ -1295,6 +1332,10 @@ function calculateAllMetrics(currentInputs) {
         const usageStorageRevenue = totalStorageGB * USAGE_STORAGE_PER_GB * 0.5;
         const usageBandwidthRevenue = totalImageBandwidthGB * USAGE_BANDWIDTH_PER_GB * 0.5;
         monthlyRevenue = baseRevenue + usageStorageRevenue + usageBandwidthRevenue + projectFeeRevenue;
+    } else if (pricingModel === 'backup') {
+        // Backup/Archive: IBM Cloud strategy - 50% discount positioning as "backup" to existing systems
+        // Customers sync their primary system with us at half price, then we become primary over 6-12 months
+        monthlyRevenue = (customers * pricePerCustomer * 0.5) + projectFeeRevenue;
     } else {
         // Tiered subscription (traditional SaaS)
         monthlyRevenue = (customers * pricePerCustomer) + projectFeeRevenue;
