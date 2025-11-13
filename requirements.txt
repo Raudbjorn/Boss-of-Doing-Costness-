@@ -1,4 +1,4 @@
-# SaaS Photo Platform - Business Financial Analysis
+# Film Location Database Platform - Business Financial Analysis
 # Requirements for Jupyter Notebook
 
 # Core data science libraries
