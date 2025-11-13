@@ -365,8 +365,14 @@ select:focus {
 <body>
     <div class="container">
         <header>
-            <h1>Film Location Database Platform - Business Calculator</h1>
-            <p class="subtitle">AWS-style "pay for what you use" pricing • Scale up during pre-production, scale down during shooting</p>
+            <h1>Turn Your Location Library Into Predictable Recurring Revenue</h1>
+            <p class="subtitle">
+                Model storage, bandwidth, and pricing for film location databases — see in seconds
+                whether your platform prints money or burns cash.
+            </p>
+            <p class="subtitle" style="margin-top:8px;font-size:13px;opacity:0.85;">
+                Built for production companies, scouts, and platforms using AWS/Supabase/Vercel-style usage pricing.
+            </p>
         </header>
 
         <div class="tabs">
@@ -394,6 +400,12 @@ select:focus {
                                 <option value="indie_filmmaker">Independent Filmmaker</option>
                             </select>
                             <div class="info-text">Adjusts pricing and usage assumptions</div>
+                        </div>
+
+                        <div id="segmentStory" class="alert-box alert-info" style="margin-top:10px;">
+                            <strong>Production Company (Film/TV)</strong><br>
+                            Multi-project clients with long lead times and annual contracts. Lower churn (3%), mid-range database size.
+                            Winning one production company can pay for your infrastructure for months.
                         </div>
 
                         <div class="input-group">
@@ -439,6 +451,13 @@ select:focus {
                                 <option value="backup">Backup/Archive (IBM Cloud Strategy)</option>
                             </select>
                             <div class="info-text">Late-market entry strategies: freemium, usage, or backup positioning</div>
+                        </div>
+
+                        <div class="alert-box alert-info" id="pricingAnchor" style="margin-top:15px;">
+                            <strong>💡 Reality Check:</strong><br>
+                            One day of location fees for a typical shoot runs $3–10K. One lost hard drive or corrupt location library
+                            costs more than a year of your Studio tier. If you're charging less than a single day of location fees per month,
+                            you're likely under-pricing the value you provide.
                         </div>
 
                         <div id="backupStrategyInfo" style="display: none; background: #fff3e0; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #ff9800;">
@@ -1048,6 +1067,21 @@ select:focus {
         <div id="recommendations" class="tab-content">
             <div class="main-content">
                 <div class="section full-width">
+                    <h2>Business Classification</h2>
+                    <div id="businessClassification" class="highlight-box" style="text-align: left; padding: 20px;">
+                        <div style="font-size: 16px; margin-bottom: 10px;">You are building:</div>
+                        <div id="classificationText" style="font-size: 18px; font-weight: 600; line-height: 1.5;"></div>
+                    </div>
+                </div>
+
+                <div class="section full-width">
+                    <h2>Investor One-Liner</h2>
+                    <div class="alert-box alert-info">
+                        <p id="investorOneLiner" style="font-style:italic;font-size:15px;line-height:1.6;margin:0;"></p>
+                    </div>
+                </div>
+
+                <div class="section full-width">
                     <h2>Business Health Assessment</h2>
                     <div id="healthMetrics"></div>
                 </div>
@@ -1094,6 +1128,141 @@ const TIER_FREELANCER = 149;
 const TIER_PROFESSIONAL = 499;
 const TIER_STUDIO = 1499;
 const TIER_ENTERPRISE = 3999;
+
+// Number formatters
+const money = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0
+});
+
+const moneyDecimal = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+});
+
+const integer = new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 0
+});
+
+// Customer segment stories
+const segmentStories = {
+    production_company: `
+        <strong>Production Company (Film/TV)</strong><br>
+        Multi-project clients with long lead times and annual contracts. Lower churn (3%), mid-range database size.
+        Winning one production company can pay for your infrastructure for months.
+    `,
+    ad_agency: `
+        <strong>Advertising Agency</strong><br>
+        High-volume users with frequent campaigns and many client presentations. Larger databases (300+ locations),
+        higher viewing activity. Premium pricing justified by agency margins and client billing pass-through.
+    `,
+    location_scout: `
+        <strong>Location Scout/Freelancer</strong><br>
+        Largest databases (500+ locations) but lower ARPU. Higher churn (8%) as they work project-to-project.
+        Volume play: many scouts paying modest fees adds up. Great candidates for Freelancer tier.
+    `,
+    streaming_platform: `
+        <strong>Streaming Platform/Network</strong><br>
+        Fewer customers, but massive contracts. Lowest churn (2%), highest LTV. One streaming platform client
+        can fund your entire operation. Focus on white-glove service and enterprise features.
+    `,
+    indie_filmmaker: `
+        <strong>Independent Filmmaker</strong><br>
+        Smallest databases, lowest pricing tier, highest churn (10%). Great for freemium conversion funnel:
+        get them hooked during pre-production, convert when they see the value. Gateway to bigger projects.
+    `
+};
+
+// Business classification generator
+function classifyBusiness(metrics) {
+    const {
+        infrastructureCosts, totalCosts, monthlyChurn, pricePerCustomer,
+        profitMargin, grossMargin
+    } = metrics;
+
+    let classifications = [];
+
+    // Infrastructure intensity
+    const infraRatio = infrastructureCosts / totalCosts;
+    if (infraRatio > 0.3) {
+        classifications.push('infrastructure-heavy');
+    } else if (infraRatio > 0.15) {
+        classifications.push('balanced infrastructure');
+    } else {
+        classifications.push('people-heavy');
+    }
+
+    // Margin quality
+    if (profitMargin >= 50) {
+        classifications.push('highly profitable');
+    } else if (profitMargin >= 20) {
+        classifications.push('healthy margins');
+    } else if (profitMargin >= 0) {
+        classifications.push('low margins');
+    } else {
+        classifications.push('operating at a loss');
+    }
+
+    // Market positioning
+    if (pricePerCustomer >= 1000) {
+        classifications.push('enterprise-focused');
+    } else if (pricePerCustomer >= 200) {
+        classifications.push('mid-market');
+    } else {
+        classifications.push('mass-market');
+    }
+
+    // Churn profile
+    if (monthlyChurn <= 3) {
+        classifications.push('sticky customers');
+    } else if (monthlyChurn <= 7) {
+        classifications.push('moderate retention');
+    } else {
+        classifications.push('high churn');
+    }
+
+    // Scalability assessment
+    if (grossMargin >= 70 && profitMargin >= 20) {
+        classifications.push('highly scalable');
+    } else if (infraRatio > 0.4) {
+        classifications.push('scale requires cost optimization');
+    }
+
+    return classifications;
+}
+
+// Generate investor one-liner
+function buildInvestorOneLiner(metrics) {
+    const { monthlyRevenue, ltv, ltvCacRatio, customers, pricePerCustomer, monthlyChurn } = metrics;
+    const arr = monthlyRevenue * 12;
+
+    let line = `We run a film-location SaaS serving ${integer.format(customers)} clients at ${money.format(pricePerCustomer)}/month, `;
+    line += `generating ${money.format(arr)} ARR with `;
+
+    if (ltv && !isNaN(ltv) && isFinite(ltv)) {
+        line += `an estimated customer LTV of ${money.format(ltv)}`;
+    } else {
+        line += `strong customer relationships`;
+    }
+
+    if (ltvCacRatio && !isNaN(ltvCacRatio) && isFinite(ltvCacRatio) && ltvCacRatio > 0) {
+        line += ` and a ${ltvCacRatio.toFixed(1)}:1 LTV:CAC ratio`;
+    }
+
+    line += `. `;
+
+    // Add churn context
+    if (monthlyChurn <= 3) {
+        line += `Low churn (${monthlyChurn}%/mo) indicates strong product-market fit.`;
+    } else if (monthlyChurn >= 8) {
+        line += `Churn (${monthlyChurn}%/mo) represents our primary optimization opportunity.`;
+    }
+
+    return line;
+}
 
 // Get all input elements
 const inputs = {
@@ -1163,6 +1332,10 @@ function updateSegmentDefaults() {
         inputs.monthlyViewsPerImage.value = presets[segment].views;
         inputs.pricePerCustomer.value = presets[segment].price;
         inputs.monthlyChurn.value = presets[segment].churn;
+
+        // Update segment story
+        safeSetContent('segmentStory', segmentStories[segment] || '');
+
         calculate();
     }
 }
@@ -1436,12 +1609,12 @@ function updateCalculatorTab(metrics) {
     document.getElementById('totalCosts').textContent = totalCosts.toFixed(2);
 
     // Revenue
-    document.getElementById('monthlyRevenue').textContent = monthlyRevenue.toFixed(0);
-    document.getElementById('customerCount').textContent = customers;
-    document.getElementById('priceDisplay').textContent = pricePerCustomer.toFixed(0);
+    document.getElementById('monthlyRevenue').textContent = integer.format(monthlyRevenue);
+    document.getElementById('customerCount').textContent = integer.format(customers);
+    document.getElementById('priceDisplay').textContent = integer.format(pricePerCustomer);
 
     const netProfitElement = document.getElementById('netProfit');
-    netProfitElement.textContent = '$' + netProfit.toFixed(0);
+    netProfitElement.textContent = money.format(netProfit);
     netProfitElement.style.color = netProfit >= 0 ? '#28a745' : '#dc3545';
 
     document.getElementById('profitMargin').textContent = profitMargin.toFixed(1) + '%';
@@ -1516,23 +1689,23 @@ function updateAnalysisTab(metrics) {
     }
 
     // Update KPIs
-    document.getElementById('arr').textContent = (monthlyRevenue * 12).toFixed(0);
-    document.getElementById('ltv').textContent = ltv.toFixed(0);
+    document.getElementById('arr').textContent = integer.format(monthlyRevenue * 12);
+    document.getElementById('ltv').textContent = integer.format(ltv);
     document.getElementById('cacPayback').textContent = !isNaN(cacPayback) ? cacPayback.toFixed(1) + ' mo' : 'N/A';
     document.getElementById('ltvCacRatio').textContent = !isNaN(ltvCacRatio) ? ltvCacRatio.toFixed(1) + ':1' : 'N/A';
     document.getElementById('grossMargin').textContent = grossMargin.toFixed(1) + '%';
-    document.getElementById('burnRate').textContent = netProfit < 0 ? '$' + Math.abs(netProfit).toFixed(0) : '$0';
+    document.getElementById('burnRate').textContent = netProfit < 0 ? money.format(Math.abs(netProfit)) : '$0';
 
     // 12-month projection
-    document.getElementById('projStartCustomers').textContent = customers.toFixed(0);
-    document.getElementById('projEndCustomers').textContent = projectedCustomers.toFixed(0);
-    document.getElementById('projNewCustomers').textContent = newCustomersTotal.toFixed(0);
-    document.getElementById('projChurnedCustomers').textContent = churnedCustomersTotal.toFixed(0);
-    document.getElementById('projRevenue').textContent = totalRevenue.toFixed(0);
-    document.getElementById('projCosts').textContent = totalProjectedCost.toFixed(0);
+    document.getElementById('projStartCustomers').textContent = integer.format(customers);
+    document.getElementById('projEndCustomers').textContent = integer.format(projectedCustomers);
+    document.getElementById('projNewCustomers').textContent = integer.format(newCustomersTotal);
+    document.getElementById('projChurnedCustomers').textContent = integer.format(churnedCustomersTotal);
+    document.getElementById('projRevenue').textContent = integer.format(totalRevenue);
+    document.getElementById('projCosts').textContent = integer.format(totalProjectedCost);
     const projProfit = totalRevenue - totalProjectedCost;
     const projProfitElement = document.getElementById('projProfit');
-    projProfitElement.textContent = '$' + projProfit.toFixed(0);
+    projProfitElement.textContent = money.format(projProfit);
     projProfitElement.style.color = projProfit >= 0 ? '#28a745' : '#dc3545';
 
     // Cost structure
@@ -1665,6 +1838,24 @@ function updateRecommendations(metrics) {
     } = metrics;
 
     const vercelBWCost = metrics.vercelBandwidthCost;
+
+    // Business classification
+    const classifications = classifyBusiness(metrics);
+    const classText = `A <strong>${classifications.join(', ')}</strong> business.`;
+    document.getElementById('classificationText').innerHTML = classText;
+
+    // Color the classification box based on profitability
+    const classBox = document.getElementById('businessClassification');
+    if (profitMargin >= 20) {
+        classBox.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+    } else if (profitMargin >= 0) {
+        classBox.style.background = 'linear-gradient(135deg, #ffc107 0%, #ff9800 100%)';
+    } else {
+        classBox.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+    }
+
+    // Investor one-liner
+    document.getElementById('investorOneLiner').textContent = buildInvestorOneLiner(metrics);
 
     // Health metrics
     let healthHTML = '<div class="kpi-grid">';
