@@ -498,19 +498,23 @@ input[type="range"]::-webkit-slider-thumb {
             <p class="subtitle">Model your pricing, forecast your growth, close your deals.</p>
         </header>
 
-        <!-- MODE SELECTOR -->
+        <!-- MODE SELECTOR: The Four P's -->
         <div class="mode-selector">
             <button class="mode-btn active" onclick="switchMode('pitch')" data-mode="pitch">
                 <div class="mode-btn-title">💼 Pitch</div>
-                <div class="mode-btn-desc">Win investors & board</div>
+                <div class="mode-btn-desc">Win investors</div>
             </button>
             <button class="mode-btn" onclick="switchMode('plan')" data-mode="plan">
                 <div class="mode-btn-title">📊 Plan</div>
-                <div class="mode-btn-desc">Model your business</div>
+                <div class="mode-btn-desc">Model business</div>
             </button>
             <button class="mode-btn" onclick="switchMode('present')" data-mode="present">
                 <div class="mode-btn-title">🎯 Present</div>
                 <div class="mode-btn-desc">Close customers</div>
+            </button>
+            <button class="mode-btn" onclick="switchMode('propose')" data-mode="propose">
+                <div class="mode-btn-title">📝 Propose</div>
+                <div class="mode-btn-desc">Apply for grants</div>
             </button>
         </div>
 
@@ -519,6 +523,7 @@ input[type="range"]::-webkit-slider-thumb {
             <div id="pitchContent" class="mode-content"></div>
             <div id="planContent" class="mode-content" style="display: none;"></div>
             <div id="presentContent" class="mode-content" style="display: none;"></div>
+            <div id="proposeContent" class="mode-content" style="display: none;"></div>
         </div>
 
         <!-- SHARED CTA (visible in all modes but text changes) -->
@@ -577,7 +582,18 @@ let businessData = {
 
     // Infrastructure
     vercelTeamMembers: 1,
-    vercelBandwidthMultiplier: 0.3
+    vercelBandwidthMultiplier: 0.3,
+
+    // Grant application data
+    grantProgram: 'voxtur', // 'voxtur', 'sproti', 'throunarfrae'
+    projectName: 'Film Location Database Platform',
+    projectDuration: 24, // months
+    grantRequestPercent: 60, // % of total cost
+    startMonth: 1, // 1-12
+    startYear: new Date().getFullYear(),
+    companyName: '',
+    contactPerson: '',
+    projectDescription: ''
 };
 
 // Number formatters
@@ -737,6 +753,9 @@ function renderMode(mode) {
             break;
         case 'present':
             renderPresentMode(metrics);
+            break;
+        case 'propose':
+            renderProposeMode(metrics);
             break;
     }
 
@@ -1198,6 +1217,243 @@ function renderPresentMode(m) {
     `;
 }
 
+function renderProposeMode(m) {
+    const container = document.getElementById('proposeContent');
+
+    // Calculate grant-specific metrics
+    const projectDurationMonths = businessData.projectDuration;
+    const totalProjectCost = m.totalCosts * projectDurationMonths;
+    const personnelCost = m.employeeSalaries * projectDurationMonths;
+    const infrastructureCost = m.infrastructureCosts * projectDurationMonths;
+    const operatingCost = (m.marketingSpend + m.otherMonthlyCosts) * projectDurationMonths;
+
+    const grantAmount = totalProjectCost * (businessData.grantRequestPercent / 100);
+    const ownContribution = totalProjectCost - grantAmount;
+    const ownContributionPercent = 100 - businessData.grantRequestPercent;
+
+    // Projected revenue during grant period
+    const projectedRevenueGrant = m.monthlyRevenue * projectDurationMonths;
+
+    // Job creation
+    const ftesCreated = (personnelCost / projectDurationMonths) / 5000; // Rough estimate: $5K/month = 1 FTE
+
+    const grantPrograms = {
+        voxtur: {
+            name: 'Vöxtur (Growth)',
+            description: 'For companies with proven business model seeking scaling capital',
+            maxGrant: 50000000, // ISK
+            minOwn: 25
+        },
+        sproti: {
+            name: 'Sproti (Sprout)',
+            description: 'Three-phase program for early-stage startups',
+            maxGrant: 15000000,
+            minOwn: 10
+        },
+        throunarfrae: {
+            name: 'Þróunarfræ (Development Seed)',
+            description: 'For R&D and product development projects',
+            maxGrant: 25000000,
+            minOwn: 40
+        }
+    };
+
+    const currentProgram = grantPrograms[businessData.grantProgram];
+
+    container.innerHTML = `
+        <!-- Grant Program Selector -->
+        <div class="section full-width" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 2rem;">
+            <h2 style="color: white; border: none; margin-bottom: 1rem;">Rannís Grant Application Generator</h2>
+            <p style="opacity: 0.9; font-size: 1rem;">
+                Auto-generate grant applications from your business plan. Select your program and export pre-filled forms.
+            </p>
+        </div>
+
+        <div class="grid-2">
+            <!-- Left Column: Configuration -->
+            <div>
+                <div class="section">
+                    <h3>Project Information</h3>
+                    <div class="input-group">
+                        <label>Grant Program</label>
+                        <select id="grantProgramSelect" onchange="updateData('grantProgram', this.value)">
+                            <option value="voxtur" ${businessData.grantProgram === 'voxtur' ? 'selected' : ''}>Vöxtur (Growth)</option>
+                            <option value="sproti" ${businessData.grantProgram === 'sproti' ? 'selected' : ''}>Sproti (Sprout)</option>
+                            <option value="throunarfrae" ${businessData.grantProgram === 'throunarfrae' ? 'selected' : ''}>Þróunarfræ (Development Seed)</option>
+                        </select>
+                        <div class="info-text">${currentProgram.description}</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Project Name</label>
+                        <input type="text" value="${businessData.projectName}"
+                               onchange="updateData('projectName', this.value)">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Project Duration (months)</label>
+                        <input type="number" value="${businessData.projectDuration}" min="6" max="36" step="6"
+                               onchange="updateData('projectDuration', parseFloat(this.value))">
+                        <div class="info-text">Typical: 12-24 months</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Grant Request (%)</label>
+                        <div class="slider-group">
+                            <input type="range" min="25" max="75" step="5" value="${businessData.grantRequestPercent}"
+                                   oninput="updateData('grantRequestPercent', parseFloat(this.value)); document.getElementById('grantPercentDisplay').value = this.value;">
+                            <input type="number" id="grantPercentDisplay" value="${businessData.grantRequestPercent}" style="width: 70px;">
+                        </div>
+                        <div class="info-text">Min own contribution for ${currentProgram.name}: ${currentProgram.minOwn}%</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Project Start</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <select onchange="updateData('startMonth', parseFloat(this.value))" style="flex: 1;">
+                                ${Array.from({length: 12}, (_, i) => {
+                                    const month = i + 1;
+                                    const monthName = new Date(2000, i).toLocaleString('en', {month: 'long'});
+                                    return `<option value="${month}" ${businessData.startMonth === month ? 'selected' : ''}>${monthName}</option>`;
+                                }).join('')}
+                            </select>
+                            <input type="number" value="${businessData.startYear}" style="width: 100px;"
+                                   onchange="updateData('startYear', parseFloat(this.value))">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Company Information</h3>
+                    <div class="input-group">
+                        <label>Company Name</label>
+                        <input type="text" value="${businessData.companyName}"
+                               onchange="updateData('companyName', this.value)"
+                               placeholder="Your Company ehf.">
+                    </div>
+                    <div class="input-group">
+                        <label>Contact Person</label>
+                        <input type="text" value="${businessData.contactPerson}"
+                               onchange="updateData('contactPerson', this.value)"
+                               placeholder="Full Name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Budget Summary -->
+            <div>
+                <div class="section">
+                    <h3>Project Budget Summary</h3>
+                    <div class="cost-breakdown">
+                        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--gray-700);">Cost Categories</h4>
+                        <div class="breakdown-row">
+                            <span>Personnel Costs (${projectDurationMonths} months)</span>
+                            <span>${fmt.money.format(personnelCost)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Infrastructure/Cloud (Supabase + Vercel)</span>
+                            <span>${fmt.money.format(infrastructureCost)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Marketing & Dissemination</span>
+                            <span>${fmt.money.format(m.marketingSpend * projectDurationMonths)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Other Operating Costs</span>
+                            <span>${fmt.money.format(m.otherMonthlyCosts * projectDurationMonths)}</span>
+                        </div>
+                        <div class="breakdown-row total">
+                            <span>Total Project Cost</span>
+                            <span>${fmt.money.format(totalProjectCost)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Funding Structure</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi-card" style="background: var(--success); color: white;">
+                            <div class="kpi-label" style="color: white;">Grant Requested</div>
+                            <div class="kpi-value" style="color: white;">${fmt.money.format(grantAmount)}</div>
+                            <div class="info-text" style="color: white; opacity: 0.9;">${businessData.grantRequestPercent}% of total</div>
+                        </div>
+                        <div class="kpi-card" style="background: var(--primary); color: white;">
+                            <div class="kpi-label" style="color: white;">Own Contribution</div>
+                            <div class="kpi-value" style="color: white;">${fmt.money.format(ownContribution)}</div>
+                            <div class="info-text" style="color: white; opacity: 0.9;">${ownContributionPercent}% of total</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Economic Impact</h3>
+                    <div class="cost-breakdown">
+                        <div class="breakdown-row">
+                            <span>Projected Revenue (${projectDurationMonths} months)</span>
+                            <span>${fmt.money.format(projectedRevenueGrant)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Jobs Created (FTEs)</span>
+                            <span>${ftesCreated.toFixed(1)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Revenue/Cost Ratio</span>
+                            <span>${(projectedRevenueGrant / totalProjectCost).toFixed(2)}x</span>
+                        </div>
+                        <div class="breakdown-row total">
+                            <span>Sustainability Score</span>
+                            <span class="${m.netProfit > 0 ? 'positive' : 'warning'}">
+                                ${m.netProfit > 0 ? 'Profitable ✓' : 'Needs optimization'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="section full-width">
+            <h2>Export Grant Application</h2>
+            <p style="color: var(--gray-600); margin-bottom: 1.5rem;">
+                Generate pre-filled application documents for ${currentProgram.name}. Download and review before submitting.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <button class="action-btn" onclick="exportGrantBudget()" style="width: 100%;">
+                    📊 Export Budget Spreadsheet
+                </button>
+                <button class="action-btn action-btn-secondary" onclick="exportGrantApplication()" style="width: 100%;">
+                    📄 Export Application Form
+                </button>
+                <button class="action-btn action-btn-secondary" onclick="exportProjectPlan()" style="width: 100%;">
+                    📋 Export Project Plan
+                </button>
+                <button class="action-btn action-btn-secondary" onclick="exportFinancialProjection()" style="width: 100%;">
+                    📈 Export Financial Projection
+                </button>
+            </div>
+        </div>
+
+        <!-- Checklist -->
+        <div class="section full-width" style="background: var(--gray-50); border-left: 4px solid var(--primary);">
+            <h3>Application Checklist</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem;">
+                <div>
+                    <div style="margin-bottom: 0.5rem;">✓ Project budget breakdown</div>
+                    <div style="margin-bottom: 0.5rem;">✓ Financial projections (${projectDurationMonths} months)</div>
+                    <div style="margin-bottom: 0.5rem;">✓ Co-funding commitment (${ownContributionPercent}%)</div>
+                    <div style="margin-bottom: 0.5rem;">✓ Economic impact analysis</div>
+                </div>
+                <div>
+                    <div style="margin-bottom: 0.5rem;">☐ Project description (write separately)</div>
+                    <div style="margin-bottom: 0.5rem;">☐ Market analysis (add to Plan mode)</div>
+                    <div style="margin-bottom: 0.5rem;">☐ Risk assessment (review in Plan mode)</div>
+                    <div style="margin-bottom: 0.5rem;">☐ Team qualifications (upload CVs)</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 function updateCTA(mode, m) {
     const ctaText = document.getElementById('ctaText');
     const ctaButton = document.getElementById('ctaButton');
@@ -1219,6 +1475,18 @@ function updateCTA(mode, m) {
         case 'present':
             ctaText.textContent = `Save ${fmt.money.format(m.valueCreated - m.pricePerCustomer)} per month. Book your demo today.`;
             ctaButton.textContent = "Schedule Your Demo";
+            break;
+        case 'propose':
+            const projectCost = m.totalCosts * businessData.projectDuration;
+            const grantAmt = projectCost * (businessData.grantRequestPercent / 100);
+            ctaText.textContent = `Apply for ${fmt.money.format(grantAmt)} in ${businessData.grantProgram === 'voxtur' ? 'Vöxtur' : businessData.grantProgram === 'sproti' ? 'Sproti' : 'Þróunarfræ'} funding.`;
+            ctaButton.textContent = "Download All Documents";
+            ctaButton.onclick = () => {
+                exportGrantBudget();
+                exportGrantApplication();
+                exportProjectPlan();
+                exportFinancialProjection();
+            };
             break;
     }
 }
@@ -1309,6 +1577,222 @@ That's a ${m.roiMultiple.toFixed(1)}x ROI for our customers.
     const a = document.createElement('a');
     a.href = url;
     a.download = 'business-summary.md';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Grant export functions
+function exportGrantBudget() {
+    const m = calculateMetrics(businessData);
+    const projectDuration = businessData.projectDuration;
+    const totalProjectCost = m.totalCosts * projectDuration;
+    const grantAmount = totalProjectCost * (businessData.grantRequestPercent / 100);
+    const ownContribution = totalProjectCost - grantAmount;
+
+    const budget = `# ${businessData.projectName} - Project Budget
+## Grant Application: ${businessData.grantProgram === 'voxtur' ? 'Vöxtur' : businessData.grantProgram === 'sproti' ? 'Sproti' : 'Þróunarfræ'}
+
+### Project Details
+- **Duration:** ${projectDuration} months
+- **Start Date:** ${new Date(2000, businessData.startMonth - 1).toLocaleString('en', {month: 'long'})} ${businessData.startYear}
+- **Company:** ${businessData.companyName || 'Your Company'}
+- **Contact:** ${businessData.contactPerson || 'Contact Person'}
+
+### Budget Summary
+
+| Category | Amount | Notes |
+|----------|--------|-------|
+| **Personnel Costs** | ${fmt.money.format(m.employeeSalaries * projectDuration)} | Team salaries for ${projectDuration} months |
+| **Infrastructure** | ${fmt.money.format(m.infrastructureCosts * projectDuration)} | Supabase + Vercel cloud hosting |
+| **Marketing & Dissemination** | ${fmt.money.format(m.marketingSpend * projectDuration)} | User acquisition and outreach |
+| **Other Operating Costs** | ${fmt.money.format(m.otherMonthlyCosts * projectDuration)} | Tools, legal, admin |
+| **TOTAL PROJECT COST** | **${fmt.money.format(totalProjectCost)}** | |
+
+### Funding Structure
+
+| Source | Amount | Percentage |
+|--------|--------|------------|
+| **Grant Requested** | **${fmt.money.format(grantAmount)}** | ${businessData.grantRequestPercent}% |
+| **Own Contribution** | **${fmt.money.format(ownContribution)}** | ${(100 - businessData.grantRequestPercent)}% |
+| **TOTAL** | **${fmt.money.format(totalProjectCost)}** | 100% |
+
+### Monthly Breakdown (Average)
+- Personnel: ${fmt.money.format(m.employeeSalaries)}
+- Infrastructure: ${fmt.money.format(m.infrastructureCosts)}
+- Marketing: ${fmt.money.format(m.marketingSpend)}
+- Other: ${fmt.money.format(m.otherMonthlyCosts)}
+- **Monthly Total:** ${fmt.money.format(m.totalCosts)}
+`;
+
+    downloadFile(budget, 'grant-budget.md', 'text/markdown');
+}
+
+function exportGrantApplication() {
+    const m = calculateMetrics(businessData);
+    const projectDuration = businessData.projectDuration;
+    const totalProjectCost = m.totalCosts * projectDuration;
+    const grantAmount = totalProjectCost * (businessData.grantRequestPercent / 100);
+    const projectedRevenue = m.monthlyRevenue * projectDuration;
+    const ftesCreated = (m.employeeSalaries / 5000);
+
+    const application = `# Grant Application Form
+## ${businessData.grantProgram === 'voxtur' ? 'Vöxtur (Growth)' : businessData.grantProgram === 'sproti' ? 'Sproti (Sprout)' : 'Þróunarfræ (Development Seed)'} Program
+
+### 1. Project Information
+**Project Name:** ${businessData.projectName}
+**Company:** ${businessData.companyName || '[Company Name]'}
+**Contact Person:** ${businessData.contactPerson || '[Name]'}
+**Duration:** ${projectDuration} months
+**Start Date:** ${new Date(2000, businessData.startMonth - 1).toLocaleString('en', {month: 'long'})} ${businessData.startYear}
+
+### 2. Financial Summary
+- **Total Project Cost:** ${fmt.money.format(totalProjectCost)}
+- **Grant Requested:** ${fmt.money.format(grantAmount)} (${businessData.grantRequestPercent}%)
+- **Own Contribution:** ${fmt.money.format(totalProjectCost - grantAmount)} (${100 - businessData.grantRequestPercent}%)
+
+### 3. Economic Impact
+- **Projected Revenue (${projectDuration} months):** ${fmt.money.format(projectedRevenue)}
+- **Jobs Created:** ${ftesCreated.toFixed(1)} FTEs
+- **Revenue/Cost Ratio:** ${(projectedRevenue / totalProjectCost).toFixed(2)}x
+- **Sustainability:** ${m.netProfit > 0 ? 'Profitable from month 1' : 'Break-even by month ' + Math.ceil(m.breakEvenCustomers / (m.customers * m.monthlyGrowth / 100))}
+
+### 4. Project Description
+[Add your project description here]
+
+**Problem Statement:**
+Film production companies and location scouts currently struggle with:
+- Inefficient location database management
+- Time-consuming manual processes
+- Lack of collaboration tools
+- High costs of lost or corrupted location libraries
+
+**Solution:**
+Our platform provides:
+- Cloud-based location database management
+- Real-time collaboration features
+- ROI: Saves customers ${fmt.money.format(m.valueCreated)}/month vs ${fmt.money.format(m.pricePerCustomer)} cost (${m.roiMultiple.toFixed(1)}x)
+
+### 5. Market Opportunity
+- **Target Market:** Film/TV production companies, ad agencies, location scouts
+- **Current Customers:** ${m.customers}
+- **Growth Rate:** ${m.monthlyGrowth}% monthly
+- **Churn Rate:** ${m.monthlyChurn}% monthly (indicating ${m.monthlyChurn < 5 ? 'strong' : 'developing'} product-market fit)
+
+### 6. Team & Qualifications
+[Add team information and relevant experience]
+
+### 7. Risk Assessment
+**Technical Risks:** Mitigated by using proven cloud infrastructure (Supabase, Vercel)
+**Market Risks:** ${m.ltvCacRatio > 3 ? 'Low - strong unit economics with LTV:CAC of ' + m.ltvCacRatio.toFixed(1) + ':1' : 'Moderate - optimizing customer acquisition'}
+**Financial Risks:** ${m.netProfit > 0 ? 'Low - profitable business model' : 'Managed - clear path to profitability with customer growth'}
+`;
+
+    downloadFile(application, 'grant-application.md', 'text/markdown');
+}
+
+function exportProjectPlan() {
+    const m = calculateMetrics(businessData);
+
+    const plan = `# ${businessData.projectName} - Project Plan
+
+## Executive Summary
+Film location database platform targeting production companies, agencies, and scouts in the film/TV industry.
+
+## Objectives
+1. Build scalable cloud platform (Months 1-6)
+2. Acquire ${Math.ceil(m.customers * Math.pow(1 + m.monthlyGrowth / 100, businessData.projectDuration))} customers (Months 1-${businessData.projectDuration})
+3. Achieve ${fmt.money.format(m.monthlyRevenue * Math.pow(1 + m.monthlyGrowth / 100, businessData.projectDuration))} MRR by end of project
+
+## Milestones
+
+### Phase 1: Development (Months 1-6)
+- Platform architecture & infrastructure setup
+- Core features: location database, image management, collaboration
+- Beta testing with ${Math.ceil(m.customers * 0.1)} pilot customers
+- **Budget:** ${fmt.money.format(m.totalCosts * 6)}
+
+### Phase 2: Market Entry (Months 7-12)
+- Public launch
+- Customer acquisition: target ${Math.ceil(m.customers * 0.4)} customers
+- Marketing & sales infrastructure
+- **Budget:** ${fmt.money.format(m.totalCosts * 6)}
+
+### Phase 3: Growth (Months 13-${businessData.projectDuration})
+- Scale customer base to ${Math.ceil(m.customers * Math.pow(1 + m.monthlyGrowth / 100, businessData.projectDuration))} customers
+- Optimize operations and margins
+- Achieve profitability target
+- **Budget:** ${fmt.money.format(m.totalCosts * (businessData.projectDuration - 12))}
+
+## Budget Allocation
+- **Personnel:** ${((m.employeeSalaries / m.totalCosts) * 100).toFixed(0)}%
+- **Infrastructure:** ${((m.infrastructureCosts / m.totalCosts) * 100).toFixed(0)}%
+- **Marketing:** ${((m.marketingSpend / m.totalCosts) * 100).toFixed(0)}%
+- **Other:** ${((m.otherMonthlyCosts / m.totalCosts) * 100).toFixed(0)}%
+
+## Success Metrics
+- Monthly Recurring Revenue (MRR): ${fmt.money.format(m.monthlyRevenue)}
+- Customer Acquisition Cost (CAC): ${fmt.money.format(m.cac)}
+- Customer Lifetime Value (LTV): ${fmt.money.format(m.ltv)}
+- LTV:CAC Ratio: ${m.ltvCacRatio.toFixed(1)}:1 (target: >3:1)
+- Gross Margin: ${m.grossMargin.toFixed(1)}% (target: >70%)
+- Monthly Churn: ${m.monthlyChurn}% (target: <5%)
+`;
+
+    downloadFile(plan, 'project-plan.md', 'text/markdown');
+}
+
+function exportFinancialProjection() {
+    const m = calculateMetrics(businessData);
+    const projectDuration = businessData.projectDuration;
+
+    let projection = `# ${businessData.projectName} - Financial Projection (${projectDuration} Months)
+
+## Assumptions
+- Starting Customers: ${m.customers}
+- Monthly Growth: ${m.monthlyGrowth}%
+- Monthly Churn: ${m.monthlyChurn}%
+- Price per Customer: ${fmt.money.format(m.pricePerCustomer)}
+
+## Monthly Projection
+
+| Month | Customers | Revenue | Costs | Profit | Cumulative Profit |
+|-------|-----------|---------|-------|--------|-------------------|
+`;
+
+    let runningCustomers = m.customers;
+    let cumulativeProfit = 0;
+
+    for (let month = 1; month <= projectDuration; month++) {
+        const newCustomers = runningCustomers * (m.monthlyGrowth / 100);
+        const churnedCustomers = runningCustomers * (m.monthlyChurn / 100);
+        runningCustomers = runningCustomers + newCustomers - churnedCustomers;
+
+        const monthlyRev = runningCustomers * m.pricePerCustomer;
+        const monthlyCost = m.totalCosts * (runningCustomers / m.customers); // Scale costs with customers
+        const monthlyProfit = monthlyRev - monthlyCost;
+        cumulativeProfit += monthlyProfit;
+
+        projection += `| ${month} | ${runningCustomers.toFixed(0)} | ${fmt.money.format(monthlyRev)} | ${fmt.money.format(monthlyCost)} | ${fmt.money.format(monthlyProfit)} | ${fmt.money.format(cumulativeProfit)} |\n`;
+    }
+
+    projection += `\n## Summary
+- **Final Month Customers:** ${runningCustomers.toFixed(0)}
+- **Final Month Revenue:** ${fmt.money.format(runningCustomers * m.pricePerCustomer)}
+- **Total ${projectDuration}-Month Revenue:** ${fmt.money.format(m.monthlyRevenue * projectDuration * (1 + m.monthlyGrowth / 200))}
+- **Total ${projectDuration}-Month Costs:** ${fmt.money.format(m.totalCosts * projectDuration)}
+- **Net Profit:** ${fmt.money.format(cumulativeProfit)}
+- **ROI:** ${((cumulativeProfit / (m.totalCosts * projectDuration)) * 100).toFixed(1)}%
+`;
+
+    downloadFile(projection, 'financial-projection.md', 'text/markdown');
+}
+
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
 }
