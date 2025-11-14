@@ -361,6 +361,8 @@ select:focus {
     font-style: italic;
 }
     </style>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -380,6 +382,7 @@ select:focus {
             <div class="tab" onclick="switchTab(event, 'analysis')">Business Analysis</div>
             <div class="tab" onclick="switchTab(event, 'scenarios')">Growth Scenarios</div>
             <div class="tab" onclick="switchTab(event, 'recommendations')">Recommendations</div>
+            <div class="tab" onclick="switchTab(event, 'propose')">📝 PROPOSE (Grants)</div>
         </div>
 
         <!-- Calculator Tab -->
@@ -1099,6 +1102,196 @@ select:focus {
                 <div class="section full-width">
                     <h2>Risk Assessment</h2>
                     <div id="risk-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROPOSE Tab (Grant Applications) -->
+        <div id="propose" class="tab-content">
+            <div class="main-content">
+                <!-- Header Section -->
+                <div class="section full-width" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px;">
+                    <h2 style="color: white; margin-bottom: 15px;">📝 PROPOSE: Rannís Grant Application Generator</h2>
+                    <p style="opacity: 0.95; font-size: 14px;">
+                        Prepare professional grant applications for Tækniþróunarsjóður (Icelandic Technology Development Fund).
+                        Export budgets to Excel, compare programs, generate progress reports, and project multi-year financials.
+                    </p>
+                </div>
+
+                <!-- Program Selection & Comparison -->
+                <div class="section full-width">
+                    <h2>1. Compare Grant Programs</h2>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px;">
+                        <!-- Vöxtur (Growth) -->
+                        <div style="border: 2px solid #10b981; border-radius: 8px; padding: 20px; cursor: pointer;"
+                             onclick="selectGrantProgram('voxtur')" id="program-voxtur">
+                            <div style="font-size: 24px; margin-bottom: 10px;">🚀</div>
+                            <h3 style="color: #10b981; margin-bottom: 10px;">Vöxtur (Growth)</h3>
+                            <div style="font-size: 13px; color: #6c757d; margin-bottom: 15px;">
+                                For companies with proven business model seeking scaling capital
+                            </div>
+                            <div style="background: #f0fdf4; padding: 15px; border-radius: 6px; margin-bottom: 10px;">
+                                <div style="margin-bottom: 8px;"><strong>Max Grant:</strong> 50M ISK</div>
+                                <div style="margin-bottom: 8px;"><strong>Min Own Contribution:</strong> 25%</div>
+                                <div style="margin-bottom: 8px;"><strong>Duration:</strong> 12-36 months</div>
+                                <div><strong>Evaluation:</strong> Innovation (30%), Impact (40%), Execution (30%)</div>
+                            </div>
+                            <div style="font-size: 12px; color: #6c757d;">
+                                ✓ Proven product-market fit<br>
+                                ✓ Ready to scale operations<br>
+                                ✓ Clear growth strategy
+                            </div>
+                        </div>
+
+                        <!-- Sproti (Sprout) -->
+                        <div style="border: 2px solid #6366f1; border-radius: 8px; padding: 20px; cursor: pointer;"
+                             onclick="selectGrantProgram('sproti')" id="program-sproti">
+                            <div style="font-size: 24px; margin-bottom: 10px;">🌱</div>
+                            <h3 style="color: #6366f1; margin-bottom: 10px;">Sproti (Sprout)</h3>
+                            <div style="font-size: 13px; color: #6c757d; margin-bottom: 15px;">
+                                Three-phase program for early-stage startups
+                            </div>
+                            <div style="background: #eef2ff; padding: 15px; border-radius: 6px; margin-bottom: 10px;">
+                                <div style="margin-bottom: 8px;"><strong>Max Grant:</strong> 15M ISK</div>
+                                <div style="margin-bottom: 8px;"><strong>Min Own Contribution:</strong> 10%</div>
+                                <div style="margin-bottom: 8px;"><strong>Duration:</strong> 12-24 months</div>
+                                <div><strong>Evaluation:</strong> Innovation (40%), Impact (30%), Execution (30%)</div>
+                            </div>
+                            <div style="font-size: 12px; color: #6c757d;">
+                                ✓ Early-stage development<br>
+                                ✓ Three-phase funding<br>
+                                ✓ Milestone-based progression
+                            </div>
+                        </div>
+
+                        <!-- Þróunarfræ (Development Seed) -->
+                        <div style="border: 2px solid #f59e0b; border-radius: 8px; padding: 20px; cursor: pointer;"
+                             onclick="selectGrantProgram('throunarfrae')" id="program-throunarfrae">
+                            <div style="font-size: 24px; margin-bottom: 10px;">💡</div>
+                            <h3 style="color: #f59e0b; margin-bottom: 10px;">Þróunarfræ (Dev Seed)</h3>
+                            <div style="font-size: 13px; color: #6c757d; margin-bottom: 15px;">
+                                For R&D and product development projects
+                            </div>
+                            <div style="background: #fffbeb; padding: 15px; border-radius: 6px; margin-bottom: 10px;">
+                                <div style="margin-bottom: 8px;"><strong>Max Grant:</strong> 25M ISK</div>
+                                <div style="margin-bottom: 8px;"><strong>Min Own Contribution:</strong> 40%</div>
+                                <div style="margin-bottom: 8px;"><strong>Duration:</strong> 12-24 months</div>
+                                <div><strong>Evaluation:</strong> Innovation (35%), Impact (35%), Execution (30%)</div>
+                            </div>
+                            <div style="font-size: 12px; color: #6c757d;">
+                                ✓ R&D focus<br>
+                                ✓ Technical innovation<br>
+                                ✓ Development feasibility
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Configuration -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="section">
+                        <h2>2. Project Configuration</h2>
+
+                        <div class="input-group">
+                            <label for="grantProgram">Selected Program</label>
+                            <select id="grantProgram" onchange="calculateGrant()">
+                                <option value="voxtur">Vöxtur (Growth)</option>
+                                <option value="sproti">Sproti (Sprout)</option>
+                                <option value="throunarfrae">Þróunarfræ (Development Seed)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="projectName">Project Name</label>
+                            <input type="text" id="projectName" value="Film Location Database Platform" onchange="calculateGrant()">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="projectDuration">Project Duration (months)</label>
+                            <input type="number" id="projectDuration" value="24" min="12" max="36" step="1" onchange="calculateGrant()">
+                            <div class="info-text">Grant period: 12-36 months</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="grantRequestPercent">Grant Request (%)</label>
+                            <input type="range" id="grantRequestPercent" value="60" min="10" max="90" step="5" onchange="updateGrantPercentage()">
+                            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                                <span style="font-size: 12px;">10%</span>
+                                <span id="grantPercentDisplay" style="font-weight: 600; color: #10b981;">60%</span>
+                                <span style="font-size: 12px;">90%</span>
+                            </div>
+                            <div class="info-text" id="grantPercentWarning"></div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="companyName">Company/Organization</label>
+                            <input type="text" id="companyName" value="" placeholder="Your company name" onchange="calculateGrant()">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="contactPerson">Project Manager</label>
+                            <input type="text" id="contactPerson" value="" placeholder="Your name" onchange="calculateGrant()">
+                        </div>
+                    </div>
+
+                    <!-- Budget Overview -->
+                    <div class="section">
+                        <h2>3. Budget Overview</h2>
+                        <div id="grantBudgetSummary"></div>
+
+                        <div style="margin-top: 20px;">
+                            <button onclick="exportGrantBudgetExcel()" style="width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                📊 Export Budget to Excel (Rannís Format)
+                            </button>
+                            <button onclick="exportProgressReport()" style="width: 100%; padding: 12px; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; margin-bottom: 10px;">
+                                📋 Generate Progress Report
+                            </button>
+                            <button onclick="exportApplicationPDF()" style="width: 100%; padding: 12px; background: #f59e0b; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600;">
+                                📄 Export Application (Markdown)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multi-Year Projections -->
+                <div class="section full-width">
+                    <h2>4. Multi-Year Financial Projections</h2>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: inline-flex; align-items: center;">
+                            <input type="checkbox" id="includePostGrant" checked onchange="calculateGrant()" style="margin-right: 8px;">
+                            <span>Include 2 years post-grant projections</span>
+                        </label>
+                    </div>
+                    <div id="multiYearProjections"></div>
+                </div>
+
+                <!-- Progress Tracking (for awarded grants) -->
+                <div class="section full-width">
+                    <h2>5. Progress Tracking (Post-Award)</h2>
+                    <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border-left: 4px solid #10b981;">
+                        <p style="margin-bottom: 15px; color: #065f46;">
+                            Once your grant is awarded, use this section to track actual vs projected costs and generate progress reports for Rannís.
+                        </p>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                            <div>
+                                <label style="font-weight: 600; margin-bottom: 8px; display: block;">Reporting Period</label>
+                                <select id="reportingPeriod" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px;">
+                                    <option value="6">First 6 months (Mid-project)</option>
+                                    <option value="12">Year 1 Complete</option>
+                                    <option value="18">18 months (Year 2 Mid-project)</option>
+                                    <option value="24">Year 2 Complete</option>
+                                    <option value="final">Final Report</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-weight: 600; margin-bottom: 8px; display: block;">Actual Costs to Date (ISK)</label>
+                                <input type="number" id="actualCostsToDate" value="0" min="0" step="100000" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px;">
+                            </div>
+                        </div>
+
+                        <div id="progressTrackingSummary" style="margin-top: 20px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2042,6 +2235,682 @@ function updateRecommendations(metrics) {
 
     safeSetContent('risk-content', riskHTML);
 }
+
+// ========================================
+// GRANT APPLICATION FUNCTIONS (PROPOSE MODE)
+// ========================================
+
+// Grant program definitions
+const GRANT_PROGRAMS = {
+    voxtur: {
+        name: 'Vöxtur (Growth)',
+        nameEn: 'Vöxtur',
+        maxGrant: 50000000, // ISK
+        minOwnPercent: 25,
+        maxDuration: 36,
+        evaluation: { innovation: 30, impact: 40, execution: 30 },
+        color: '#10b981'
+    },
+    sproti: {
+        name: 'Sproti (Sprout)',
+        nameEn: 'Sproti',
+        maxGrant: 15000000,
+        minOwnPercent: 10,
+        maxDuration: 24,
+        evaluation: { innovation: 40, impact: 30, execution: 30 },
+        color: '#6366f1'
+    },
+    throunarfrae: {
+        name: 'Þróunarfræ (Development Seed)',
+        nameEn: 'Þróunarfræ',
+        maxGrant: 25000000,
+        minOwnPercent: 40,
+        maxDuration: 24,
+        evaluation: { innovation: 35, impact: 35, execution: 30 },
+        color: '#f59e0b'
+    }
+};
+
+// Format ISK currency
+function formatISK(amount) {
+    return new Intl.NumberFormat('is-IS', {
+        style: 'currency',
+        currency: 'ISK',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
+// Select grant program (visual feedback)
+function selectGrantProgram(programId) {
+    // Update dropdown
+    document.getElementById('grantProgram').value = programId;
+
+    // Update visual selection
+    ['voxtur', 'sproti', 'throunarfrae'].forEach(id => {
+        const elem = document.getElementById(`program-${id}`);
+        if (id === programId) {
+            elem.style.borderWidth = '3px';
+            elem.style.boxShadow = `0 4px 12px ${GRANT_PROGRAMS[id].color}40`;
+        } else {
+            elem.style.borderWidth = '2px';
+            elem.style.boxShadow = 'none';
+        }
+    });
+
+    // Recalculate
+    calculateGrant();
+}
+
+// Update grant percentage display
+function updateGrantPercentage() {
+    const percent = parseInt(document.getElementById('grantRequestPercent').value);
+    const program = GRANT_PROGRAMS[document.getElementById('grantProgram').value];
+
+    document.getElementById('grantPercentDisplay').textContent = `${percent}%`;
+
+    // Warn if below minimum
+    const ownPercent = 100 - percent;
+    const warning = document.getElementById('grantPercentWarning');
+    if (ownPercent < program.minOwnPercent) {
+        warning.innerHTML = `⚠️ Warning: ${program.nameEn} requires min ${program.minOwnPercent}% own contribution (you have ${ownPercent}%)`;
+        warning.style.color = '#dc3545';
+    } else {
+        warning.innerHTML = `✓ Own contribution: ${ownPercent}% (min ${program.minOwnPercent}% required)`;
+        warning.style.color = '#10b981';
+    }
+
+    calculateGrant();
+}
+
+// Calculate grant budget
+function calculateGrant() {
+    const inputs = gatherInputs();
+    const programId = document.getElementById('grantProgram').value;
+    const program = GRANT_PROGRAMS[programId];
+    const projectDuration = parseInt(document.getElementById('projectDuration').value);
+    const grantPercent = parseInt(document.getElementById('grantRequestPercent').value);
+
+    // Calculate monthly costs from main calculator
+    const monthlyCosts = inputs.employeeSalaries + inputs.marketingSpend + inputs.otherMonthlyCosts;
+    const supabaseCost = SUPABASE_PRO_BASE + Math.max(0, (inputs.totalImageStorageGB - STORAGE_INCLUDED)) * STORAGE_COST_PER_GB +
+                        Math.max(0, (inputs.totalImageBandwidthGB - EGRESS_INCLUDED)) * EGRESS_COST_PER_GB;
+    const vercelCost = VERCEL_PRO_PER_SEAT + Math.max(0, (inputs.totalFrontendBandwidthGB - VERCEL_BANDWIDTH_INCLUDED)) * VERCEL_BANDWIDTH_COST_PER_GB;
+    const infrastructureCost = supabaseCost + vercelCost;
+
+    const totalMonthlyCost = monthlyCosts + infrastructureCost;
+    const totalProjectCost = totalMonthlyCost * projectDuration;
+    const grantAmount = totalProjectCost * (grantPercent / 100);
+    const ownContribution = totalProjectCost - grantAmount;
+    const ownPercent = 100 - grantPercent;
+
+    // Check if grant exceeds maximum
+    const exceedsMax = grantAmount > program.maxGrant;
+    const cappedGrant = Math.min(grantAmount, program.maxGrant);
+
+    // Generate budget summary
+    let summaryHTML = `
+        <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+            <h3 style="margin-bottom: 15px; color: ${program.color};">${program.name}</h3>
+            <div style="display: grid; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #d1fae5;">
+                    <span>Project Duration:</span>
+                    <strong>${projectDuration} months</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #d1fae5;">
+                    <span>Monthly Costs (avg):</span>
+                    <strong>${formatISK(totalMonthlyCost)}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #d1fae5;">
+                    <span>Total Project Cost:</span>
+                    <strong>${formatISK(totalProjectCost)}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 12px 0; background: ${program.color}20; margin: 10px -10px; padding-left: 10px; padding-right: 10px; border-radius: 6px;">
+                    <span style="font-weight: 600; color: ${program.color};">Grant Request (${grantPercent}%):</span>
+                    <strong style="font-size: 18px; color: ${program.color};">${formatISK(grantAmount)}</strong>
+                </div>
+                ${exceedsMax ? `<div class="alert-box alert-warning" style="margin: 10px 0;">⚠️ Request exceeds max grant of ${formatISK(program.maxGrant)}. Will be capped.</div>` : ''}
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #d1fae5;">
+                    <span>Own Contribution (${ownPercent}%):</span>
+                    <strong>${formatISK(ownContribution)}</strong>
+                </div>
+                ${ownPercent < program.minOwnPercent ? `<div class="alert-box alert-danger" style="margin: 10px 0;">❌ Insufficient own contribution. Min ${program.minOwnPercent}% required.</div>` : ''}
+            </div>
+        </div>
+
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 13px;">
+            <div style="margin-bottom: 8px;"><strong>Budget Breakdown:</strong></div>
+            <div style="margin-left: 10px;">
+                <div>• Personnel: ${formatISK(inputs.employeeSalaries * projectDuration)}</div>
+                <div>• Infrastructure: ${formatISK(infrastructureCost * projectDuration)}</div>
+                <div>• Marketing: ${formatISK(inputs.marketingSpend * projectDuration)}</div>
+                <div>• Other: ${formatISK(inputs.otherMonthlyCosts * projectDuration)}</div>
+            </div>
+        </div>
+    `;
+
+    safeSetContent('grantBudgetSummary', summaryHTML);
+
+    // Calculate multi-year projections
+    calculateMultiYearProjections(totalMonthlyCost, projectDuration, grantAmount);
+}
+
+// Calculate multi-year projections
+function calculateMultiYearProjections(monthlyCost, grantDuration, grantAmount) {
+    const includePostGrant = document.getElementById('includePostGrant').checked;
+    const totalYears = includePostGrant ? Math.ceil(grantDuration / 12) + 2 : Math.ceil(grantDuration / 12);
+
+    let projectionsHTML = `
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f8f9fa;">
+                        <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Year</th>
+                        <th style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">Period</th>
+                        <th style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">Costs</th>
+                        <th style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">Revenue</th>
+                        <th style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">Grant Funding</th>
+                        <th style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">Cash Flow</th>
+                        <th style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">Cumulative</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    const inputs = gatherInputs();
+    let cumulativeCash = 0;
+    let remainingGrant = grantAmount;
+
+    for (let year = 1; year <= totalYears; year++) {
+        const isGrantYear = (year * 12) <= grantDuration;
+        const monthsInYear = 12;
+        const yearCosts = monthlyCost * monthsInYear;
+
+        // Revenue projection (assuming growth from current calculator)
+        const customersYear = inputs.customers * Math.pow(1 + inputs.monthlyGrowth / 100, (year - 1) * 12);
+        const yearRevenue = customersYear * inputs.pricePerCustomer * monthsInYear;
+
+        // Grant funding for this year
+        const yearGrantFunding = isGrantYear ? Math.min(yearCosts, remainingGrant) : 0;
+        remainingGrant = Math.max(0, remainingGrant - yearGrantFunding);
+
+        // Cash flow
+        const cashFlow = yearRevenue + yearGrantFunding - yearCosts;
+        cumulativeCash += cashFlow;
+
+        const periodLabel = isGrantYear ? 'Grant Period' : 'Post-Grant';
+        const rowStyle = isGrantYear ? 'background: #f0fdf4;' : '';
+
+        projectionsHTML += `
+            <tr style="${rowStyle}">
+                <td style="padding: 12px; border: 1px solid #dee2e6;"><strong>Year ${year}</strong></td>
+                <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">${periodLabel}</td>
+                <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">${formatISK(yearCosts)}</td>
+                <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6;">${formatISK(yearRevenue)}</td>
+                <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6; color: #10b981; font-weight: 600;">${formatISK(yearGrantFunding)}</td>
+                <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6; color: ${cashFlow >= 0 ? '#10b981' : '#dc3545'}; font-weight: 600;">${formatISK(cashFlow)}</td>
+                <td style="padding: 12px; text-align: right; border: 1px solid #dee2e6; font-weight: 600;">${formatISK(cumulativeCash)}</td>
+            </tr>
+        `;
+    }
+
+    projectionsHTML += `
+                </tbody>
+            </table>
+        </div>
+
+        <div class="alert-box alert-info" style="margin-top: 15px;">
+            <strong>Projection Assumptions:</strong><br>
+            • Customer growth rate: ${inputs.monthlyGrowth}% per month<br>
+            • Price per customer: ${formatISK(inputs.pricePerCustomer)}/month<br>
+            • Costs remain constant at current calculator values<br>
+            • Grant funding distributed evenly over grant period
+        </div>
+    `;
+
+    safeSetContent('multiYearProjections', projectionsHTML);
+}
+
+// Export grant budget to Excel (Rannís format)
+function exportGrantBudgetExcel() {
+    const projectName = document.getElementById('projectName').value;
+    const projectDuration = parseInt(document.getElementById('projectDuration').value);
+    const inputs = gatherInputs();
+
+    // Calculate costs
+    const monthlyCosts = inputs.employeeSalaries + inputs.marketingSpend + inputs.otherMonthlyCosts;
+    const supabaseCost = SUPABASE_PRO_BASE + Math.max(0, (inputs.totalImageStorageGB - STORAGE_INCLUDED)) * STORAGE_COST_PER_GB +
+                        Math.max(0, (inputs.totalImageBandwidthGB - EGRESS_INCLUDED)) * EGRESS_COST_PER_GB;
+    const vercelCost = VERCEL_PRO_PER_SEAT + Math.max(0, (inputs.totalFrontendBandwidthGB - VERCEL_BANDWIDTH_INCLUDED)) * VERCEL_BANDWIDTH_COST_PER_GB;
+    const infrastructureCost = supabaseCost + vercelCost;
+    const totalMonthlyCost = monthlyCosts + infrastructureCost;
+
+    // Calculate per-year breakdown (up to 3 years)
+    const years = Math.min(3, Math.ceil(projectDuration / 12));
+    const year1Months = Math.min(12, projectDuration);
+    const year2Months = Math.min(12, Math.max(0, projectDuration - 12));
+    const year3Months = Math.max(0, projectDuration - 24);
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+
+    // Budget worksheet matching Rannís format
+    const budgetData = [
+        ['Kostnaðaráætlun - Hjálparskjal'],
+        [],
+        ['Þetta skjal er til að auðvelda umsækjendum að gera kostnaðaráætlun fyrir rafrænt skráningareyðublað sjóðsins.'],
+        ['Verkefni:', projectName],
+        [],
+        [],
+        ['Verkefnisár 1', '', '', '', '', 'Verkefnisár 2', '', '', '', '', 'Verkefnisár 3'],
+        ['Allar upphæðir í þúsundum króna', '', '', '', '', 'Allar upphæðir í þúsundum króna', '', '', '', '', 'Allar upphæðir í þúsundum króna'],
+        [],
+        ['Laun og launatengd gjöld', '', '', '', '', 'Laun og launatengd gjöld', '', '', '', '', 'Laun og launatengd gjöld'],
+        ['Heiti þátttakanda', 'Launþegi', 'Mannmánuðir', 'Laun', 'Samtals', 'Heiti þátttakanda', 'Launþegi', 'Mannmánuðir', 'Laun', 'Samtals', 'Heiti þátttakanda', 'Launþegi', 'Mannmánuðir', 'Laun', 'Samtals'],
+        [document.getElementById('companyName').value || 'Fyrirtæki', 'Já', year1Months, (inputs.employeeSalaries * year1Months / 1000).toFixed(0), (inputs.employeeSalaries * year1Months / 1000).toFixed(0),
+         document.getElementById('companyName').value || 'Fyrirtæki', 'Já', year2Months, (inputs.employeeSalaries * year2Months / 1000).toFixed(0), (inputs.employeeSalaries * year2Months / 1000).toFixed(0),
+         document.getElementById('companyName').value || 'Fyrirtæki', 'Já', year3Months, (inputs.employeeSalaries * year3Months / 1000).toFixed(0), (inputs.employeeSalaries * year3Months / 1000).toFixed(0)],
+        ['Samtals', '', '', '', (inputs.employeeSalaries * year1Months / 1000).toFixed(0), 'Samtals', '', '', '', (inputs.employeeSalaries * year2Months / 1000).toFixed(0), 'Samtals', '', '', '', (inputs.employeeSalaries * year3Months / 1000).toFixed(0)],
+        [],
+        ['Rekstrarvörur, efni o.fl.', '', '', '', '', 'Rekstrarvörur, efni o.fl.', '', '', '', '', 'Rekstrarvörur, efni o.fl.'],
+        ['Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals', 'Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals', 'Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals'],
+        [document.getElementById('companyName').value || 'Fyrirtæki', 'Rekstrarvörur', '', '', (inputs.otherMonthlyCosts * year1Months * 0.3 / 1000).toFixed(0),
+         document.getElementById('companyName').value || 'Fyrirtæki', 'Rekstrarvörur', '', '', (inputs.otherMonthlyCosts * year2Months * 0.3 / 1000).toFixed(0),
+         document.getElementById('companyName').value || 'Fyrirtæki', 'Rekstrarvörur', '', '', (inputs.otherMonthlyCosts * year3Months * 0.3 / 1000).toFixed(0)],
+        ['Samtals', '', '', '', (inputs.otherMonthlyCosts * year1Months * 0.3 / 1000).toFixed(0), 'Samtals', '', '', '', (inputs.otherMonthlyCosts * year2Months * 0.3 / 1000).toFixed(0), 'Samtals', '', '', '', (inputs.otherMonthlyCosts * year3Months * 0.3 / 1000).toFixed(0)],
+        [],
+        ['Aðkeypt þjónusta', '', '', '', '', 'Aðkeypt þjónusta', '', '', '', '', 'Aðkeypt þjónusta'],
+        ['Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals', 'Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals', 'Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals'],
+        [document.getElementById('companyName').value || 'Fyrirtæki', 'Cloud infrastructure (Supabase/Vercel)', '', '', (infrastructureCost * year1Months / 1000).toFixed(0),
+         document.getElementById('companyName').value || 'Fyrirtæki', 'Cloud infrastructure (Supabase/Vercel)', '', '', (infrastructureCost * year2Months / 1000).toFixed(0),
+         document.getElementById('companyName').value || 'Fyrirtæki', 'Cloud infrastructure (Supabase/Vercel)', '', '', (infrastructureCost * year3Months / 1000).toFixed(0)],
+        ['Samtals', '', '', '', (infrastructureCost * year1Months / 1000).toFixed(0), 'Samtals', '', '', '', (infrastructureCost * year2Months / 1000).toFixed(0), 'Samtals', '', '', '', (infrastructureCost * year3Months / 1000).toFixed(0)],
+        [],
+        ['Ferðir og fundir', '', '', '', '', 'Ferðir og fundir', '', '', '', '', 'Ferðir og fundir'],
+        ['Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals', 'Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals', 'Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals'],
+        [document.getElementById('companyName').value || 'Fyrirtæki', 'Ráðstefnur, viðburðir', '', '', (inputs.marketingSpend * year1Months * 0.2 / 1000).toFixed(0),
+         document.getElementById('companyName').value || 'Fyrirtæki', 'Ráðstefnur, viðburðir', '', '', (inputs.marketingSpend * year2Months * 0.2 / 1000).toFixed(0),
+         document.getElementById('companyName').value || 'Fyrirtæki', 'Ráðstefnur, viðburðir', '', '', (inputs.marketingSpend * year3Months * 0.2 / 1000).toFixed(0)],
+        ['Samtals', '', '', '', (inputs.marketingSpend * year1Months * 0.2 / 1000).toFixed(0), 'Samtals', '', '', '', (inputs.marketingSpend * year2Months * 0.2 / 1000).toFixed(0), 'Samtals', '', '', '', (inputs.marketingSpend * year3Months * 0.2 / 1000).toFixed(0)],
+        [],
+        ['Afskriftir áhalda og tækja', '', '', '', '', 'Afskriftir áhalda og tækja', '', '', '', '', 'Afskriftir áhalda og tækja'],
+        ['Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals', 'Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals', 'Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals'],
+        ['', '', '', '', '0', '', '', '', '', '0', '', '', '', '', '0'],
+        ['Samtals', '', '', '', '0', 'Samtals', '', '', '', '0', 'Samtals', '', '', '', '0'],
+        [],
+        ['Samrekstur og aðstaða', '', '', '', '', 'Samrekstur og aðstaða', '', '', '', '', 'Samrekstur og aðstaða'],
+        ['Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals', 'Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals', 'Heiti þátttakanda', 'Stutt skýring', '', '', 'Samtals'],
+        [document.getElementById('companyName').value || 'Fyrirtæki', 'Húsnæði, tækjabúnaður', '', '', (inputs.otherMonthlyCosts * year1Months * 0.7 / 1000).toFixed(0),
+         document.getElementById('companyName').value || 'Fyrirtæki', 'Húsnæði, tækjabúnaður', '', '', (inputs.otherMonthlyCosts * year2Months * 0.7 / 1000).toFixed(0),
+         document.getElementById('companyName').value || 'Fyrirtæki', 'Húsnæði, tækjabúnaður', '', '', (inputs.otherMonthlyCosts * year3Months * 0.7 / 1000).toFixed(0)],
+        ['Samtals', '', '', '', (inputs.otherMonthlyCosts * year1Months * 0.7 / 1000).toFixed(0), 'Samtals', '', '', '', (inputs.otherMonthlyCosts * year2Months * 0.7 / 1000).toFixed(0), 'Samtals', '', '', '', (inputs.otherMonthlyCosts * year3Months * 0.7 / 1000).toFixed(0)],
+        [],
+        ['Samtals kostnaður', '', '', '', (totalMonthlyCost * year1Months / 1000).toFixed(0), 'Samtals kostnaður', '', '', '', (totalMonthlyCost * year2Months / 1000).toFixed(0), 'Samtals kostnaður', '', '', '', (totalMonthlyCost * year3Months / 1000).toFixed(0)]
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(budgetData);
+
+    // Set column widths
+    ws['!cols'] = [
+        {wch: 25}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 12},
+        {wch: 25}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 12},
+        {wch: 25}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 12}
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Kostnaðaráætlun');
+
+    // Export file
+    const filename = `Rannis_Budget_${projectName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, filename);
+}
+
+// Export progress report
+function exportProgressReport() {
+    const projectName = document.getElementById('projectName').value;
+    const companyName = document.getElementById('companyName').value || 'Fyrirtæki';
+    const contactPerson = document.getElementById('contactPerson').value || 'Verkefnisstjóri';
+    const programId = document.getElementById('grantProgram').value;
+    const program = GRANT_PROGRAMS[programId];
+    const reportingPeriod = document.getElementById('reportingPeriod').value;
+    const actualCosts = parseFloat(document.getElementById('actualCostsToDate').value) || 0;
+    const projectDuration = parseInt(document.getElementById('projectDuration').value);
+    const grantPercent = parseInt(document.getElementById('grantRequestPercent').value);
+
+    const inputs = gatherInputs();
+    const totalMonthlyCost = inputs.employeeSalaries + inputs.marketingSpend + inputs.otherMonthlyCosts +
+                            (SUPABASE_PRO_BASE + VERCEL_PRO_PER_SEAT);
+
+    // Determine reporting period months
+    let periodMonths;
+    if (reportingPeriod === 'final') {
+        periodMonths = projectDuration;
+    } else {
+        periodMonths = parseInt(reportingPeriod);
+    }
+
+    const projectedCosts = totalMonthlyCost * periodMonths;
+    const totalProjectCost = totalMonthlyCost * projectDuration;
+    const grantAmount = totalProjectCost * (grantPercent / 100);
+    const grantReceived = grantAmount * 0.8; // 80% upfront typical
+    const variance = actualCosts - projectedCosts;
+    const variancePercent = (variance / projectedCosts * 100).toFixed(1);
+
+    // Generate markdown report
+    const report = `# FRAMVINDUSKÝRSLA
+## Tækniþróunarsjóður
+
+---
+
+**Verkefnisnúmer:** [Fyllið inn]
+**Heiti verkefnis:** ${projectName}
+**Stuðnþegi:** ${companyName}
+**Verkefnisstjóri:** ${contactPerson}
+**Kennitala:** [Fyllið inn]
+**Umsjónarmaður hjá Rannís:** [Fyllið inn]
+
+**Stuðningstímabil:** ${new Date().getFullYear()}
+**Mánuðir:** ${reportingPeriod === 'final' ? 'Lokaskýrsla' : `1-${periodMonths}`}
+**Stuðningur Tækniþróunarsjóðs:** ${formatISK(grantAmount)}
+
+---
+
+## KOSTNAÐAR- OG FJÁRMÖGNUNARYFIRLIT
+
+| Liður | Upphæð (þús.kr.) |
+|-------|-----------------|
+| **Kostnaður alls á tímabilinu:** | ${(actualCosts / 1000).toFixed(0)} |
+| **Frá Tækniþróunarsjóði á tímabilinu:** | ${(grantReceived / 1000).toFixed(0)} |
+| **Önnur fjármögnun á tímabilinu:** | ${((actualCosts - grantReceived) / 1000).toFixed(0)} |
+| **Fjármögnun alls á tímabilinu:** | ${(actualCosts / 1000).toFixed(0)} |
+
+**Ósk um greiðslu nú úr Tækniþróunarsjóði:** ${((grantAmount * 0.2) / 1000).toFixed(0)} þús.kr.
+
+---
+
+## Kostnaðaryfirlit (þús. kr.)
+
+| Tegund starfsemi/raunkostnaður | Verkefnisstjóri | Samtals |
+|-------------------------------|----------------|---------|
+| **Laun og launatengd gjöld:** | ${((inputs.employeeSalaries * periodMonths) / 1000).toFixed(0)} | ${((inputs.employeeSalaries * periodMonths) / 1000).toFixed(0)} |
+| **Rekstrarvörur:** | ${((inputs.otherMonthlyCosts * periodMonths * 0.3) / 1000).toFixed(0)} | ${((inputs.otherMonthlyCosts * periodMonths * 0.3) / 1000).toFixed(0)} |
+| **Aðkeypt þjónusta:** | ${(((SUPABASE_PRO_BASE + VERCEL_PRO_PER_SEAT) * periodMonths) / 1000).toFixed(0)} | ${(((SUPABASE_PRO_BASE + VERCEL_PRO_PER_SEAT) * periodMonths) / 1000).toFixed(0)} |
+| **Ferðir og ferðakostnaður:** | ${((inputs.marketingSpend * periodMonths * 0.2) / 1000).toFixed(0)} | ${((inputs.marketingSpend * periodMonths * 0.2) / 1000).toFixed(0)} |
+| **Samrekstur og aðstaða:** | ${((inputs.otherMonthlyCosts * periodMonths * 0.7) / 1000).toFixed(0)} | ${((inputs.otherMonthlyCosts * periodMonths * 0.7) / 1000).toFixed(0)} |
+| **Kostnaður alls:** | **${(projectedCosts / 1000).toFixed(0)}** | **${(projectedCosts / 1000).toFixed(0)}** |
+
+### Frávik frá áætlun
+
+- **Áætlaður kostnaður:** ${formatISK(projectedCosts)}
+- **Raunverulegur kostnaður:** ${formatISK(actualCosts)}
+- **Frávik:** ${formatISK(variance)} (${variancePercent >= 0 ? '+' : ''}${variancePercent}%)
+- **Staða:** ${Math.abs(parseFloat(variancePercent)) < 10 ? '✓ Innan viðmiðunar' : '⚠️ Umtalsvert frávik'}
+
+---
+
+## FRAMVINDA Á TÍMABILINU
+
+### Staða verkefnisins
+
+[Lýsið hér skýrt og hnitmiðað stöðu verkefnisins og framvindu miðað við verkáætlun í umsókn]
+
+**Skilgreindir vörður:**
+- [ ] Vörður 1: [Lýsing]
+- [ ] Vörður 2: [Lýsing]
+- [ ] Vörður 3: [Lýsing]
+
+### Afrakstur
+
+[Lýsið þeim afrakstri sem áætlað var að skila samkvæmt samningi samhliða framvinduskýrslu]
+
+**Afhentur afrakstur:**
+1. [Afrakstur 1]
+2. [Afrakstur 2]
+3. [Afrakstur 3]
+
+---
+
+## NÆSTU VERKÞÆTTIR
+
+[Hvaða verkþáttum á að vinna að fram að næstu skýrslu til sjóðsins]
+
+**Áætlaðir verkþættir:**
+1. [Verkþáttur 1]
+2. [Verkþáttur 2]
+3. [Verkþáttur 3]
+
+### Breytingar á áætlun
+
+${Math.abs(parseFloat(variancePercent)) > 15 ? '⚠️ Athugið: Umtalsverðar breytingar á kostnaðaráætlun. Vinsamlegast útskýrið ástæður hér fyrir neðan.' : '✓ Engar verulegar breytingar á áætlun.'}
+
+[Ef verulegar breytingar hafa orðið á markmiði, verkáætlun, skipulagningu, stjórnun og kostnaði verkefnisins miðað við samning, skal greina frá þeim og rökstyðja]
+
+---
+
+## Undirskrift
+
+**Staður:** ___________________________
+**Dagsetning:** ___________________________
+**Verkefnisstjóri:** ___________________________
+
+---
+
+*Skjal útbúið með Film Location Platform Business Calculator*
+*Útbúið: ${new Date().toLocaleString('is-IS')}*
+`;
+
+    // Download as markdown
+    const blob = new Blob([report], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Framvinduskyrsla_${projectName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Update progress tracking summary
+    let summaryHTML = `
+        <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+            <h3 style="margin-bottom: 15px;">Progress Report Summary</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <div style="font-size: 13px; color: #6c757d; margin-bottom: 5px;">Projected Costs</div>
+                    <div style="font-size: 20px; font-weight: 600;">${formatISK(projectedCosts)}</div>
+                </div>
+                <div>
+                    <div style="font-size: 13px; color: #6c757d; margin-bottom: 5px;">Actual Costs</div>
+                    <div style="font-size: 20px; font-weight: 600;">${formatISK(actualCosts)}</div>
+                </div>
+                <div>
+                    <div style="font-size: 13px; color: #6c757d; margin-bottom: 5px;">Variance</div>
+                    <div style="font-size: 20px; font-weight: 600; color: ${variance >= 0 ? '#dc3545' : '#10b981'};">${formatISK(variance)}</div>
+                </div>
+                <div>
+                    <div style="font-size: 13px; color: #6c757d; margin-bottom: 5px;">Variance %</div>
+                    <div style="font-size: 20px; font-weight: 600; color: ${Math.abs(parseFloat(variancePercent)) > 10 ? '#dc3545' : '#10b981'};">${variancePercent >= 0 ? '+' : ''}${variancePercent}%</div>
+                </div>
+            </div>
+            <div class="alert-box alert-info" style="margin-top: 15px;">
+                ✓ Progress report downloaded successfully. Complete the narrative sections and submit to Rannís.
+            </div>
+        </div>
+    `;
+    safeSetContent('progressTrackingSummary', summaryHTML);
+}
+
+// Export application as markdown
+function exportApplicationPDF() {
+    const projectName = document.getElementById('projectName').value;
+    const companyName = document.getElementById('companyName').value || 'Fyrirtæki';
+    const contactPerson = document.getElementById('contactPerson').value || 'Verkefnisstjóri';
+    const programId = document.getElementById('grantProgram').value;
+    const program = GRANT_PROGRAMS[programId];
+    const projectDuration = parseInt(document.getElementById('projectDuration').value);
+    const grantPercent = parseInt(document.getElementById('grantRequestPercent').value);
+
+    const inputs = gatherInputs();
+    const totalMonthlyCost = inputs.employeeSalaries + inputs.marketingSpend + inputs.otherMonthlyCosts +
+                            (SUPABASE_PRO_BASE + VERCEL_PRO_PER_SEAT);
+    const totalProjectCost = totalMonthlyCost * projectDuration;
+    const grantAmount = totalProjectCost * (grantPercent / 100);
+
+    const application = `# ${program.name} - Umsókn
+## ${projectName}
+
+---
+
+**Umsækjandi:** ${companyName}
+**Verkefnisstjóri:** ${contactPerson}
+**Umbeðin styrkupphæð:** ${formatISK(grantAmount)}
+**Heildarkostnaður verkefnis:** ${formatISK(totalProjectCost)}
+**Eigið framlag:** ${formatISK(totalProjectCost - grantAmount)} (${100 - grantPercent}%)
+**Verkefnistími:** ${projectDuration} mánuðir
+
+---
+
+## 1. Markmið verkefnisins
+
+### 1.1. Lýsing á verkefninu
+
+Film Location Database Platform er B2B SaaS vettvangur fyrir kvikmynda- og sjónvarpsiðnaðinn. Vettvangurinn gerir framleiðslufyrirtækjum, auglýsingastofum og staðsetningarleiturum kleift að:
+
+- Geyma og skipuleggja umfangsmikil gagnagrunn staðsetninga með háskerpu myndum
+- Kynna og sýna kvikmyndatökustaði fyrir framleiðslufyrirtæki og skapandi teymi
+- Gera lausamönnum og sjálfstæðum kvikmyndagerðarmönnum kleift að nálgast úrval staðsetningasafna
+- Auðvelda staðsetningarleit með leitarhæfum lýsigögnum, leyfum og flutningaupplýsingum
+
+### 1.2. Nýnæmi
+
+**Markaðslegt nýnæmi:**
+- Mætir nýrri þörf á kvikmyndaiðnaðarmarkaði fyrir heildarskýjalausn
+- Fyrsti vettvangurinn hannaður sérstaklega fyrir umfangsmikillar myndasöfn kvikmyndagerðar
+
+**Tæknilegt nýnæmi:**
+- Hagnýtir Supabase og Vercel tækni á nýstárlegan hátt fyrir mynda-þunga verkefni
+- Leiðir til umbóta á þekktri skýjatækni með sérhæfðum myndavinnslu
+
+### 1.3. Vænt áhrif
+
+**Markaðsmöguleikar:**
+- Norðurlöndin: ~200 framleiðslufyrirtæki × €${((inputs.pricePerCustomer * 12) / 150).toFixed(0)}/ár
+- Evrópa: ~5.000 framleiðslufyrirtæki
+- Heimsmarkaður: ~50.000+ hugsanlegir viðskiptavinir
+
+**Vaxtarspá:**
+- Ár 1: ${inputs.customers} viðskiptavinir, ${formatISK(inputs.pricePerCustomer * inputs.customers * 12)} velta
+- Ár 2: ${Math.round(inputs.customers * Math.pow(1 + inputs.monthlyGrowth/100, 12))} viðskiptavinir
+- Ár 3: ${Math.round(inputs.customers * Math.pow(1 + inputs.monthlyGrowth/100, 24))} viðskiptavinir
+
+---
+
+## 2. Verkáætlun
+
+### Verkþættir
+
+**Mánuðir 1-6:** Grunnþróun
+- Kerfi fyrir innskráningu og auðkenningu
+- Gagnagrunnshönnun fyrir staðsetningar og myndir
+- Grunnviðmót fyrir innsendingu mynda
+
+**Mánuðir 7-12:** Ítarefni
+- Þróun leitarkerfi
+- Sérsniðin gallerí og kynningarsíður
+- Viðmót fyrir viðskiptavini (dashboard)
+
+**Mánuðir 13-${projectDuration}:** Stækkun og markaðssetning
+- Samþætting við greiðslumiðlun
+- Prófanir með raunverulegum notendum
+- Markaðsherferð á kvikmyndahátíðum
+
+### Mannafli
+
+- Verkefnisstjóri (${(inputs.employeeSalaries / 1000000).toFixed(1)}M ISK/mán)
+- Tækniteymi
+- Viðskiptaþróun og sala
+
+---
+
+## 3. Kostnaðaráætlun
+
+| Kostnaðarliður | Mánuður | ${projectDuration} mánuðir | Hlutfall |
+|---------------|---------|-----------|----------|
+| **Laun og launatengd gjöld** | ${formatISK(inputs.employeeSalaries)} | ${formatISK(inputs.employeeSalaries * projectDuration)} | ${((inputs.employeeSalaries / totalMonthlyCost) * 100).toFixed(0)}% |
+| **Innviðir (Supabase/Vercel)** | ${formatISK(SUPABASE_PRO_BASE + VERCEL_PRO_PER_SEAT)} | ${formatISK((SUPABASE_PRO_BASE + VERCEL_PRO_PER_SEAT) * projectDuration)} | ${(((SUPABASE_PRO_BASE + VERCEL_PRO_PER_SEAT) / totalMonthlyCost) * 100).toFixed(0)}% |
+| **Markaðssetning** | ${formatISK(inputs.marketingSpend)} | ${formatISK(inputs.marketingSpend * projectDuration)} | ${((inputs.marketingSpend / totalMonthlyCost) * 100).toFixed(0)}% |
+| **Annar rekstrarkostnaður** | ${formatISK(inputs.otherMonthlyCosts)} | ${formatISK(inputs.otherMonthlyCosts * projectDuration)} | ${((inputs.otherMonthlyCosts / totalMonthlyCost) * 100).toFixed(0)}% |
+| **SAMTALS** | **${formatISK(totalMonthlyCost)}** | **${formatISK(totalProjectCost)}** | **100%** |
+
+### Fjármögnun
+
+- **Umbeðinn styrkur (${grantPercent}%):** ${formatISK(grantAmount)}
+- **Eigið framlag (${100-grantPercent}%):** ${formatISK(totalProjectCost - grantAmount)}
+
+---
+
+## 4. Matsviðmið
+
+### ${program.name} - Vægi matsgilda
+
+| Matsgildi | Vægi |
+|-----------|------|
+| Nýnæmi | ${program.evaluation.innovation}% |
+| Áhrif | ${program.evaluation.impact}% |
+| Framkvæmd | ${program.evaluation.execution}% |
+
+### Eigin mat
+
+**Nýnæmi (${program.evaluation.innovation}%):**
+- Markaðslegt: Mætir nýrri þörf á þekktum markaði
+- Tæknilegt: Tækniyfirfærsla með umbótum
+
+**Áhrif (${program.evaluation.impact}%):**
+- Verðmæti: Talsverðar veltuván væntingar
+- Líkur á árangri: Góðar líkur - forsendur til staðar
+
+**Framkvæmd (${program.evaluation.execution}%):**
+- Áætlun: Raunhæf verk-, tíma- og kostnaðaráætlun
+- Bolmagn: Að mestu leyti til staðar
+
+---
+
+## 5. Hagnýting niðurstaðna
+
+### Viðskiptamódel
+
+- B2B SaaS áskriftarlíkan
+- Þrepaskipt verðlagning (€149-€3.999/mán)
+- Markhópar: Framleiðslufyrirtæki, auglýsingastofur, staðsetningarleitar
+
+### Markaðsaðgangur
+
+1. **Norðurlönd fyrst:** Íslensk, norsk, sænsk kvikmyndaiðnaður
+2. **Evrópsk útvíkkun:** Þýskaland, Bretland, Frakkland
+3. **Heimsmarkaður:** Bandaríkin, Kanada, Ástralía
+
+### Samkeppnisforskot
+
+- Kvikmyndaiðnaðarsértækir eiginleikar (leyfisupplýsingar, árstíðabundin gögn)
+- Stuðningur við háskerpu myndir (4-10MB per mynd)
+- B2B áhersla með árlegum samningum (lítil brottför)
+
+---
+
+**Umsókn útbúin með Film Location Platform Business Calculator**
+**Dagsetning:** ${new Date().toLocaleDateString('is-IS')}
+`;
+
+    // Download as markdown
+    const blob = new Blob([application], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Umsokn_${program.nameEn}_${projectName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ========================================
+// END GRANT APPLICATION FUNCTIONS
+// ========================================
 
 // Initial calculation
 calculate();
