@@ -1117,9 +1117,9 @@ const VERCEL_BANDWIDTH_INCLUDED = 1000; // 1TB = 1000GB
 const VERCEL_BANDWIDTH_COST = 0.15;
 
 // Usage-based pricing (AWS-style)
-const USAGE_BASE_FEE = 99; // Monthly platform access fee
-const USAGE_STORAGE_PER_GB = 0.08; // Per GB/month storage
-const USAGE_BANDWIDTH_PER_GB = 0.12; // Per GB bandwidth
+const USAGE_BASE_FEE = 99; // Monthly platform access fee per customer
+const USAGE_STORAGE_PER_GB = 0.08; // Per GB/month storage (applied to aggregate total storage across all customers)
+const USAGE_BANDWIDTH_PER_GB = 0.12; // Per GB bandwidth (applied to aggregate total bandwidth across all customers)
 
 // Pricing tiers
 const TIER_FREE = 0; // Always free tier
@@ -1366,7 +1366,7 @@ function updatePricingTier() {
         starterSection.style.display = tiers[tier].showStarter ? 'block' : 'none';
         freemiumMetrics.style.display = tiers[tier].showMetrics ? 'block' : 'none';
 
-        calculate();
+        // Note: calculate() is called by the parent function (updatePricingModel or direct caller)
     }
 }
 
@@ -1389,13 +1389,11 @@ function updatePricingModel() {
         backupInfo.style.display = 'none';
         // Usage-based: $99 base + $0.08/GB storage + $0.12/GB bandwidth
         inputs.pricePerCustomer.value = 99; // Base platform fee
-        calculate();
     } else if (model === 'hybrid') {
         tieredSection.style.display = 'block';
         usageInfo.style.display = 'block';
         backupInfo.style.display = 'none';
         // Hybrid: reduced base + usage
-        calculate();
     } else if (model === 'backup') {
         tieredSection.style.display = 'block';
         usageInfo.style.display = 'none';
@@ -1404,6 +1402,9 @@ function updatePricingModel() {
         // Keep current tier selection, will apply discount in revenue calculation
         updatePricingTier();
     }
+
+    // Single calculate() call for all pricing model changes
+    calculate();
 }
 
 function switchTab(event, tabName) {
