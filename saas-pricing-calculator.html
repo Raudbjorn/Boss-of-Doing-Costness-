@@ -1495,9 +1495,11 @@ function calculateAllMetrics(currentInputs) {
 
     if (pricingModel === 'usage') {
         // AWS-style usage-based pricing
-        // Note: totalStorageGB and totalImageBandwidthGB are already aggregates across all customers
-        const usageStorageRevenue = totalStorageGB * USAGE_STORAGE_PER_GB;
-        const usageBandwidthRevenue = totalImageBandwidthGB * USAGE_BANDWIDTH_PER_GB;
+        // Calculate per-customer usage charges (assume equal usage if individual data not available)
+        const perCustomerStorageGB = customers > 0 ? totalStorageGB / customers : 0;
+        const perCustomerBandwidthGB = customers > 0 ? totalImageBandwidthGB / customers : 0;
+        const usageStorageRevenue = customers * perCustomerStorageGB * USAGE_STORAGE_PER_GB;
+        const usageBandwidthRevenue = customers * perCustomerBandwidthGB * USAGE_BANDWIDTH_PER_GB;
         const baseFeeRevenue = USAGE_BASE_FEE * customers;
         monthlyRevenue = baseFeeRevenue + usageStorageRevenue + usageBandwidthRevenue + projectFeeRevenue;
     } else if (pricingModel === 'hybrid') {
