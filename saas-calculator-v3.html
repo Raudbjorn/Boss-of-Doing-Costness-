@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Location Platform - Business Model Generator</title>
+    <style>
+/* --- CSS Variables for Easy Theming --- */
+:root {
+    --primary: #4F46E5;
+    --primary-dark: #4338CA;
+    --secondary: #7C3AED;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #DC2626;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-300: #D1D5DB;
+    --gray-600: #4B5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: var(--gray-50);
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* --- MODE SELECTOR (The Three P's) --- */
+.mode-selector {
+    display: flex;
+    background: var(--gray-100);
+    border-bottom: 3px solid var(--gray-200);
+    padding: 0.5rem;
+    gap: 0.5rem;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 1.25rem;
+    border: 2px solid transparent;
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.mode-btn:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mode-btn.active {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    border-color: var(--primary);
+}
+
+.mode-btn-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.mode-btn-desc {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+/* --- HEADER --- */
+header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    opacity: 0.9;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* --- LAYOUT --- */
+.main-content {
+    padding: 2rem;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.full-width { grid-column: 1 / -1; }
+
+.section {
+    background: var(--gray-50);
+    padding: 1.75rem;
+    border-radius: 12px;
+    border: 1px solid var(--gray-200);
+}
+
+h2 {
+    color: var(--gray-900);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: 0.75rem;
+}
+
+h3 {
+    color: var(--gray-700);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* --- INPUTS --- */
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--gray-700);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+input[type="number"],
+input[type="text"],
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.info-text {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    margin-top: 0.3rem;
+}
+
+/* Sliders */
+.slider-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+input[type="range"] {
+    flex: 1;
+    height: 6px;
+    background: var(--gray-200);
+    border-radius: 5px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.slider-group input[type="number"] {
+    width: 80px;
+    text-align: center;
+}
+
+/* Strategy preset buttons */
+.strategy-presets {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.preset-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid var(--gray-300);
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.preset-btn:hover {
+    border-color: var(--primary);
+    background: var(--gray-50);
+}
+
+.preset-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* --- RESULTS & KPIs --- */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.kpi-card {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+}
+
+.kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+}
+
+.kpi-label {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.positive { color: var(--success); }
+.negative { color: var(--danger); }
+.warning { color: var(--warning); }
+
+/* Health Score - Extra Large for Pitch mode */
+.health-score-hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    padding: 3rem;
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.health-score-value {
+    font-size: 6rem;
+    font-weight: 800;
+    line-height: 1;
+    margin: 1rem 0;
+}
+
+.health-score-label {
+    font-size: 1.25rem;
+    opacity: 0.9;
+}
+
+.health-score-desc {
+    font-size: 1rem;
+    opacity: 0.85;
+    margin-top: 1rem;
+}
+
+/* ROI Hero - Extra Large for Present mode */
+.roi-hero {
+    background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+    color: white;
+    padding: 3rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+}
+
+.roi-equation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.roi-equation > div {
+    text-align: center;
+}
+
+.roi-equation-label {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.roi-equation-value {
+    font-size: 3.5rem;
+    font-weight: 800;
+}
+
+.roi-equation-arrow {
+    font-size: 3rem;
+    opacity: 0.7;
+}
+
+/* Strategy boxes */
+.strategy-box {
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border-left: 5px solid;
+}
+
+.strategy-box-title {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.strategy-backup {
+    background: #FFF8E1;
+    border-color: var(--warning);
+}
+
+.strategy-usage {
+    background: #E3F2FD;
+    border-color: #2196F3;
+}
+
+.strategy-freemium {
+    background: #E8F5E9;
+    border-color: var(--success);
+}
+
+/* Cost breakdown */
+.cost-breakdown {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--gray-200);
+}
+
+.breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 0.9rem;
+}
+
+.breakdown-row:last-child {
+    border-bottom: none;
+}
+
+.breakdown-row.total {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--primary);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 2px solid var(--primary);
+}
+
+/* CTA */
+.cta-section {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    padding: 3rem;
+    margin: 2rem;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.cta-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.cta-button {
+    background: white;
+    color: var(--primary);
+    border: none;
+    padding: 1rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Export/Action buttons */
+.action-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.action-btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.action-btn-secondary:hover {
+    background: var(--gray-50);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .mode-selector {
+        flex-direction: column;
+    }
+
+    .roi-equation {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .roi-equation-arrow {
+        transform: rotate(90deg);
+    }
+}
+
+/* Show/hide based on mode */
+.mode-pitch .plan-only,
+.mode-pitch .present-only { display: none !important; }
+
+.mode-plan .pitch-only,
+.mode-plan .present-only { display: none !important; }
+
+.mode-present .pitch-only,
+.mode-present .plan-only { display: none !important; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Film Location Platform: Business Model Generator</h1>
+            <p class="subtitle">Model your pricing, forecast your growth, close your deals.</p>
+        </header>
+
+        <!-- MODE SELECTOR: The Four P's -->
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="switchMode('pitch')" data-mode="pitch">
+                <div class="mode-btn-title">💼 Pitch</div>
+                <div class="mode-btn-desc">Win investors</div>
+            </button>
+            <button class="mode-btn" onclick="switchMode('plan')" data-mode="plan">
+                <div class="mode-btn-title">📊 Plan</div>
+                <div class="mode-btn-desc">Model business</div>
+            </button>
+            <button class="mode-btn" onclick="switchMode('present')" data-mode="present">
+                <div class="mode-btn-title">🎯 Present</div>
+                <div class="mode-btn-desc">Close customers</div>
+            </button>
+            <button class="mode-btn" onclick="switchMode('propose')" data-mode="propose">
+                <div class="mode-btn-title">📝 Propose</div>
+                <div class="mode-btn-desc">Apply for grants</div>
+            </button>
+        </div>
+
+        <!-- MAIN CONTENT AREA (changes based on mode) -->
+        <div class="main-content">
+            <div id="pitchContent" class="mode-content"></div>
+            <div id="planContent" class="mode-content" style="display: none;"></div>
+            <div id="presentContent" class="mode-content" style="display: none;"></div>
+            <div id="proposeContent" class="mode-content" style="display: none;"></div>
+        </div>
+
+        <!-- SHARED CTA (visible in all modes but text changes) -->
+        <div class="cta-section">
+            <div class="cta-text" id="ctaText">Ready to build your plan?</div>
+            <button class="cta-button" id="ctaButton">Get Started</button>
+        </div>
+    </div>
+
+<script>
+// =============================
+// GLOBAL STATE & CONFIG
+// =============================
+const CONFIG = {
+    SUPABASE_PRO_BASE: 120,
+    STORAGE_INCLUDED: 100,
+    STORAGE_COST_PER_GB: 0.021,
+    EGRESS_INCLUDED: 250,
+    EGRESS_COST_PER_GB: 0.09,
+    VERCEL_PRO_PER_SEAT: 20,
+    VERCEL_BANDWIDTH_INCLUDED: 1000,
+    VERCEL_BANDWIDTH_COST: 0.15,
+    USAGE_BASE_FEE: 99,
+    USAGE_STORAGE_PER_GB: 0.08,
+    USAGE_BANDWIDTH_PER_GB: 0.12
+};
+
+// Current mode
+let currentMode = 'pitch';
+
+// Current business data (centralized state)
+let businessData = {
+    // Basic info
+    pricingModel: 'tiered',
+    pricePerCustomer: 499,
+    customers: 50,
+
+    // Usage
+    locationsPerCustomer: 150,
+    imagesPerLocation: 25,
+    avgImageSize: 4,
+    monthlyViewsPerImage: 5,
+
+    // Growth
+    monthlyGrowth: 8,
+    monthlyChurn: 3,
+
+    // Costs
+    employeeSalaries: 15000,
+    marketingSpend: 3000,
+    otherMonthlyCosts: 500,
+
+    // ROI
+    hoursSaved: 40,
+    hourlyRate: 75,
+
+    // Infrastructure
+    vercelTeamMembers: 1,
+    vercelBandwidthMultiplier: 0.3,
+
+    // Grant application data
+    grantProgram: 'voxtur', // 'voxtur', 'sproti', 'throunarfrae'
+    projectName: 'Film Location Database Platform',
+    projectDuration: 24, // months
+    grantRequestPercent: 60, // % of total cost
+    startMonth: 1, // 1-12
+    startYear: new Date().getFullYear(),
+    companyName: '',
+    contactPerson: '',
+    projectDescription: ''
+};
+
+// Number formatters
+const fmt = {
+    money: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }),
+    moneyDecimal: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+    integer: new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }),
+    percent: new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 })
+};
+
+// =============================
+// CORE CALCULATIONS
+// =============================
+function calculateMetrics(data) {
+    // 1. Usage
+    const totalImages = data.customers * data.locationsPerCustomer * data.imagesPerLocation;
+    const totalStorageGB = (totalImages * data.avgImageSize) / 1024;
+    const totalEgressGB = (totalImages * data.monthlyViewsPerImage * data.avgImageSize) / 1024;
+
+    // 2. Infrastructure costs
+    const storageOverageGB = Math.max(0, totalStorageGB - CONFIG.STORAGE_INCLUDED);
+    const storageCost = storageOverageGB * CONFIG.STORAGE_COST_PER_GB;
+    const egressOverageGB = Math.max(0, totalEgressGB - CONFIG.EGRESS_INCLUDED);
+    const egressCost = egressOverageGB * CONFIG.EGRESS_COST_PER_GB;
+    const supabaseTotalCost = CONFIG.SUPABASE_PRO_BASE + storageCost + egressCost;
+
+    const vercelBaseCost = data.vercelTeamMembers * CONFIG.VERCEL_PRO_PER_SEAT;
+    const vercelBandwidthOverageGB = Math.max(0, totalEgressGB * data.vercelBandwidthMultiplier - CONFIG.VERCEL_BANDWIDTH_INCLUDED);
+    const vercelBandwidthCost = vercelBandwidthOverageGB * CONFIG.VERCEL_BANDWIDTH_COST;
+    const vercelTotalCost = vercelBaseCost + vercelBandwidthCost;
+
+    const infrastructureCosts = supabaseTotalCost + vercelTotalCost;
+    const operationalCosts = data.employeeSalaries + data.marketingSpend + data.otherMonthlyCosts;
+    const totalCosts = infrastructureCosts + operationalCosts;
+    const fixedCosts = CONFIG.SUPABASE_PRO_BASE + vercelBaseCost + operationalCosts;
+    const variableCosts = storageCost + egressCost + vercelBandwidthCost;
+
+    // 3. Revenue
+    let monthlyRevenue;
+    const baseRevenue = data.customers * data.pricePerCustomer;
+
+    switch (data.pricingModel) {
+        case 'usage':
+            monthlyRevenue = (CONFIG.USAGE_BASE_FEE * data.customers) +
+                            (totalStorageGB * CONFIG.USAGE_STORAGE_PER_GB) +
+                            (totalEgressGB * CONFIG.USAGE_BANDWIDTH_PER_GB);
+            break;
+        case 'hybrid':
+            monthlyRevenue = (baseRevenue * 0.5) +
+                            (totalStorageGB * CONFIG.USAGE_STORAGE_PER_GB * 0.5) +
+                            (totalEgressGB * CONFIG.USAGE_BANDWIDTH_PER_GB * 0.5);
+            break;
+        case 'backup':
+            monthlyRevenue = baseRevenue * 0.5;
+            break;
+        default:
+            monthlyRevenue = baseRevenue;
+            break;
+    }
+
+    // 4. Profitability
+    const netProfit = monthlyRevenue - totalCosts;
+    const profitMargin = monthlyRevenue > 0 ? (netProfit / monthlyRevenue) * 100 : 0;
+    const grossMargin = monthlyRevenue > 0 ? ((monthlyRevenue - infrastructureCosts) / monthlyRevenue) * 100 : 0;
+    const arr = monthlyRevenue * 12;
+
+    // 5. Customer metrics
+    const avgLifetimeMonths = data.monthlyChurn > 0 ? Math.min(1 / (data.monthlyChurn / 100), 120) : 120;
+    const ltv = data.pricePerCustomer * avgLifetimeMonths;
+    const newCustomersPerMonth = data.customers * (data.monthlyGrowth / 100);
+    const cac = newCustomersPerMonth > 0 ? data.marketingSpend / newCustomersPerMonth : (data.marketingSpend > 0 ? Infinity : 0);
+    const ltvCacRatio = cac > 0 && isFinite(cac) ? ltv / cac : 0;
+    const cacPayback = data.pricePerCustomer > 0 && cac > 0 && isFinite(cac) ? cac / data.pricePerCustomer : 0;
+
+    // 6. Projections (12 months)
+    let projectedCustomers = data.customers;
+    let totalRevenue = 0;
+    let totalCostsProjected = 0;
+
+    for (let month = 1; month <= 12; month++) {
+        const newCustomers = projectedCustomers * (data.monthlyGrowth / 100);
+        const churnedCustomers = projectedCustomers * (data.monthlyChurn / 100);
+        projectedCustomers += newCustomers - churnedCustomers;
+
+        const monthRevenue = projectedCustomers * data.pricePerCustomer;
+        const monthTotalCosts = totalCosts * (projectedCustomers / data.customers);
+
+        totalRevenue += monthRevenue;
+        totalCostsProjected += monthTotalCosts;
+    }
+
+    // 7. Health Score
+    const marginScore = Math.max(0, Math.min(35, profitMargin * 1.2));
+    const ltvCacScore = ltvCacRatio > 5 ? 35 : ltvCacRatio > 3 ? 30 : ltvCacRatio > 1 ? 15 : 0;
+    const growthScore = data.monthlyGrowth > 10 ? 20 : data.monthlyGrowth > 5 ? 15 : 10;
+    const churnScore = data.monthlyChurn < 3 ? 10 : data.monthlyChurn < 7 ? 5 : 0;
+    const healthScore = Math.round(marginScore + ltvCacScore + growthScore + churnScore);
+
+    // 8. ROI for customers
+    const valueCreated = data.hoursSaved * data.hourlyRate;
+    const roiMultiple = valueCreated / data.pricePerCustomer;
+
+    // 9. Break-even
+    const variableCostPerCustomer = data.customers > 0 ? variableCosts / data.customers : 0;
+    const contributionMargin = data.pricePerCustomer - variableCostPerCustomer;
+    const breakEvenCustomers = contributionMargin > 0 ? Math.ceil(fixedCosts / contributionMargin) : Infinity;
+
+    return {
+        ...data,
+        totalStorageGB, totalEgressGB, storageCost, egressCost,
+        supabaseTotalCost, vercelTotalCost, infrastructureCosts,
+        totalCosts, fixedCosts, variableCosts,
+        monthlyRevenue, netProfit, profitMargin, grossMargin, arr,
+        ltv, cac, ltvCacRatio, cacPayback,
+        projectedCustomers, totalRevenue, totalCostsProjected,
+        healthScore,
+        valueCreated, roiMultiple,
+        breakEvenCustomers
+    };
+}
+
+// =============================
+// MODE SWITCHING
+// =============================
+function switchMode(mode) {
+    currentMode = mode;
+
+    // Update button states
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+
+    // Hide all mode contents
+    document.querySelectorAll('.mode-content').forEach(content => {
+        content.style.display = 'none';
+    });
+
+    // Show selected mode
+    document.getElementById(`${mode}Content`).style.display = 'block';
+
+    // Render the selected mode
+    renderMode(mode);
+}
+
+// =============================
+// MODE RENDERERS
+// =============================
+function renderMode(mode) {
+    const metrics = calculateMetrics(businessData);
+
+    switch(mode) {
+        case 'pitch':
+            renderPitchMode(metrics);
+            break;
+        case 'plan':
+            renderPlanMode(metrics);
+            break;
+        case 'present':
+            renderPresentMode(metrics);
+            break;
+        case 'propose':
+            renderProposeMode(metrics);
+            break;
+    }
+
+    updateCTA(mode, metrics);
+}
+
+function renderPitchMode(m) {
+    const container = document.getElementById('pitchContent');
+
+    // Health score description
+    let healthDesc = 'Enter your data to see your score.';
+    if (m.healthScore > 80) healthDesc = 'Excellent! Highly scalable & profitable model.';
+    else if (m.healthScore > 50) healthDesc = 'Solid foundation. Poised for growth with optimization.';
+    else healthDesc = 'Needs attention. Key areas require strategic improvement.';
+
+    const healthColor = m.healthScore > 80 ? 'var(--success)' : m.healthScore > 50 ? 'var(--warning)' : 'var(--danger)';
+
+    container.innerHTML = `
+        <!-- Health Score Hero -->
+        <div class="health-score-hero">
+            <div class="health-score-label">Business Health Score</div>
+            <div class="health-score-value" style="color: ${healthColor}">${m.healthScore}</div>
+            <div class="health-score-desc">${healthDesc}</div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Left: Key Metrics -->
+            <div>
+                <div class="section">
+                    <h2>Investor Metrics</h2>
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-label">ARR</div>
+                            <div class="kpi-value positive">${fmt.money.format(m.arr)}</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">LTV</div>
+                            <div class="kpi-value">${fmt.money.format(m.ltv)}</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">LTV:CAC</div>
+                            <div class="kpi-value">${m.ltvCacRatio > 0 ? m.ltvCacRatio.toFixed(1) + ':1' : 'N/A'}</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Gross Margin</div>
+                            <div class="kpi-value">${m.grossMargin.toFixed(1)}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 2rem;">
+                    <h2>Strategy Configuration</h2>
+                    <div class="input-group">
+                        <label>Business Strategy</label>
+                        <div class="strategy-presets">
+                            <button class="preset-btn" onclick="applyStrategy('land-expand')">🎯 Land & Expand</button>
+                            <button class="preset-btn" onclick="applyStrategy('enterprise')">🏢 Enterprise</button>
+                            <button class="preset-btn" onclick="applyStrategy('volume')">📈 Volume</button>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Pricing Model</label>
+                        <select id="pricingModelPitch" onchange="updateData('pricingModel', this.value)">
+                            <option value="tiered">Tiered Subscription</option>
+                            <option value="usage">AWS-Style Usage</option>
+                            <option value="hybrid">Hybrid</option>
+                            <option value="backup">Competitor Displacement</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Projections & Export -->
+            <div>
+                <div class="section">
+                    <h2>12-Month Projection</h2>
+                    <div class="cost-breakdown">
+                        <div class="breakdown-row">
+                            <span>Starting Customers</span>
+                            <span>${fmt.integer.format(m.customers)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Projected Customers (Month 12)</span>
+                            <span>${fmt.integer.format(m.projectedCustomers)}</span>
+                        </div>
+                        <div class="breakdown-row total">
+                            <span>Total Revenue</span>
+                            <span>${fmt.money.format(m.totalRevenue)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Total Costs</span>
+                            <span>${fmt.money.format(m.totalCostsProjected)}</span>
+                        </div>
+                        <div class="breakdown-row total">
+                            <span>Net Profit</span>
+                            <span class="${m.totalRevenue - m.totalCostsProjected > 0 ? 'positive' : 'negative'}">
+                                ${fmt.money.format(m.totalRevenue - m.totalCostsProjected)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 2rem;">
+                    <h2>Export Your Pitch</h2>
+                    <button class="action-btn" onclick="exportPitch()" style="width: 100%; margin-bottom: 0.5rem;">
+                        📄 Copy Investor One-Liner
+                    </button>
+                    <button class="action-btn action-btn-secondary" onclick="exportFullPitch()" style="width: 100%;">
+                        📊 Download Full Summary
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Set current values
+    document.getElementById('pricingModelPitch').value = m.pricingModel;
+}
+
+function renderPlanMode(m) {
+    const container = document.getElementById('planContent');
+
+    container.innerHTML = `
+        <div class="section full-width">
+            <h2>Full Business Model Configuration</h2>
+            <p style="color: var(--gray-600); margin-bottom: 1.5rem;">
+                Complete control over all variables. Model your scenarios in detail.
+            </p>
+        </div>
+
+        <div class="grid-2">
+            <!-- Left Column: All Inputs -->
+            <div>
+                <div class="section">
+                    <h3>Pricing & Revenue</h3>
+                    <div class="input-group">
+                        <label>Pricing Model</label>
+                        <select id="pricingModelPlan" onchange="updateData('pricingModel', this.value)">
+                            <option value="tiered">Tiered Subscription</option>
+                            <option value="usage">AWS-Style Usage</option>
+                            <option value="hybrid">Hybrid</option>
+                            <option value="backup">Competitor Displacement</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Price per Customer ($/month)</label>
+                        <input type="number" id="pricePlan" value="${m.pricePerCustomer}"
+                               onchange="updateData('pricePerCustomer', parseFloat(this.value))">
+                    </div>
+                    <div class="input-group">
+                        <label>Number of Customers</label>
+                        <input type="number" id="customersPlan" value="${m.customers}"
+                               onchange="updateData('customers', parseFloat(this.value))">
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Usage Profile</h3>
+                    <div class="input-group">
+                        <label>Locations per Customer</label>
+                        <input type="number" value="${m.locationsPerCustomer}"
+                               onchange="updateData('locationsPerCustomer', parseFloat(this.value))">
+                    </div>
+                    <div class="input-group">
+                        <label>Images per Location</label>
+                        <input type="number" value="${m.imagesPerLocation}"
+                               onchange="updateData('imagesPerLocation', parseFloat(this.value))">
+                    </div>
+                    <div class="input-group">
+                        <label>Avg Image Size (MB)</label>
+                        <input type="number" value="${m.avgImageSize}" step="0.5"
+                               onchange="updateData('avgImageSize', parseFloat(this.value))">
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Views per Image</label>
+                        <input type="number" value="${m.monthlyViewsPerImage}"
+                               onchange="updateData('monthlyViewsPerImage', parseFloat(this.value))">
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Growth & Retention</h3>
+                    <div class="input-group">
+                        <label>Monthly Growth Rate (%)</label>
+                        <div class="slider-group">
+                            <input type="range" min="0" max="50" step="0.5" value="${m.monthlyGrowth}"
+                                   oninput="updateData('monthlyGrowth', parseFloat(this.value)); document.getElementById('growthDisplay').value = this.value;">
+                            <input type="number" id="growthDisplay" value="${m.monthlyGrowth}" style="width: 70px;">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Monthly Churn Rate (%)</label>
+                        <div class="slider-group">
+                            <input type="range" min="0" max="20" step="0.1" value="${m.monthlyChurn}"
+                                   oninput="updateData('monthlyChurn', parseFloat(this.value)); document.getElementById('churnDisplay').value = this.value;">
+                            <input type="number" id="churnDisplay" value="${m.monthlyChurn}" style="width: 70px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Operating Costs ($/month)</h3>
+                    <div class="input-group">
+                        <label>Team Costs</label>
+                        <input type="number" value="${m.employeeSalaries}" step="1000"
+                               onchange="updateData('employeeSalaries', parseFloat(this.value))">
+                    </div>
+                    <div class="input-group">
+                        <label>Marketing & Sales</label>
+                        <input type="number" value="${m.marketingSpend}" step="500"
+                               onchange="updateData('marketingSpend', parseFloat(this.value))">
+                    </div>
+                    <div class="input-group">
+                        <label>Other G&A</label>
+                        <input type="number" value="${m.otherMonthlyCosts}" step="100"
+                               onchange="updateData('otherMonthlyCosts', parseFloat(this.value))">
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Customer ROI Calculator</h3>
+                    <p style="font-size: 0.85rem; color: var(--gray-600); margin-bottom: 1rem;">
+                        Calculate the value you create for customers to justify your pricing.
+                    </p>
+                    <div class="input-group">
+                        <label>Hours Saved per Customer/Month</label>
+                        <input type="number" value="${m.hoursSaved}"
+                               onchange="updateData('hoursSaved', parseFloat(this.value))">
+                        <div class="info-text">Time saved on scouting, organizing, presenting</div>
+                    </div>
+                    <div class="input-group">
+                        <label>Customer's Blended Hourly Rate ($)</label>
+                        <input type="number" value="${m.hourlyRate}"
+                               onchange="updateData('hourlyRate', parseFloat(this.value))">
+                        <div class="info-text">Average rate for producers, scouts, coordinators</div>
+                    </div>
+                    <div class="kpi-card" style="margin-top: 1rem; background: var(--gray-50); border: 2px solid var(--success);">
+                        <div class="kpi-label">Value Created per Customer</div>
+                        <div class="kpi-value positive">${fmt.money.format(m.valueCreated)}</div>
+                        <p class="info-text">vs your price of ${fmt.money.format(m.pricePerCustomer)} = ${m.roiMultiple.toFixed(1)}x ROI</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div>
+                <div class="section">
+                    <h3>Profitability</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-label">Monthly Revenue</div>
+                            <div class="kpi-value">${fmt.money.format(m.monthlyRevenue)}</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Monthly Costs</div>
+                            <div class="kpi-value">${fmt.money.format(m.totalCosts)}</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Net Profit</div>
+                            <div class="kpi-value ${m.netProfit > 0 ? 'positive' : 'negative'}">
+                                ${fmt.money.format(m.netProfit)}
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Margin</div>
+                            <div class="kpi-value">${m.profitMargin.toFixed(1)}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Cost Breakdown</h3>
+                    <div class="cost-breakdown">
+                        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--gray-700);">Infrastructure (Supabase + Vercel)</h4>
+                        <div class="breakdown-row">
+                            <span>Supabase</span>
+                            <span>${fmt.moneyDecimal.format(m.supabaseTotalCost)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Vercel</span>
+                            <span>${fmt.moneyDecimal.format(m.vercelTotalCost)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span style="font-weight: 600;">Infrastructure Total</span>
+                            <span style="font-weight: 600;">${fmt.money.format(m.infrastructureCosts)}</span>
+                        </div>
+
+                        <h4 style="font-size: 0.9rem; margin: 1rem 0 0.5rem; color: var(--gray-700);">Operating Costs</h4>
+                        <div class="breakdown-row">
+                            <span>Team</span>
+                            <span>${fmt.money.format(m.employeeSalaries)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Marketing</span>
+                            <span>${fmt.money.format(m.marketingSpend)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Other G&A</span>
+                            <span>${fmt.money.format(m.otherMonthlyCosts)}</span>
+                        </div>
+
+                        <div class="breakdown-row total">
+                            <span>Total Monthly Costs</span>
+                            <span>${fmt.money.format(m.totalCosts)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Break-Even Analysis</h3>
+                    <div class="cost-breakdown">
+                        <div class="breakdown-row">
+                            <span>Current Customers</span>
+                            <span>${fmt.integer.format(m.customers)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Customers to Break Even</span>
+                            <span>${isFinite(m.breakEvenCustomers) ? fmt.integer.format(m.breakEvenCustomers) : 'N/A'}</span>
+                        </div>
+                        <div class="breakdown-row total">
+                            <span>Status</span>
+                            <span class="${m.netProfit > 0 ? 'positive' : 'negative'}">
+                                ${m.netProfit > 0 ? 'Profitable ✓' : 'Need ' + (m.breakEvenCustomers - m.customers).toFixed(0) + ' more customers'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Set current values
+    document.getElementById('pricingModelPlan').value = m.pricingModel;
+}
+
+function renderPresentMode(m) {
+    const container = document.getElementById('presentContent');
+
+    const netSavings = m.valueCreated - m.pricePerCustomer;
+
+    container.innerHTML = `
+        <!-- ROI Hero -->
+        <div class="roi-hero">
+            <h2 style="color: white; border: none; text-align: center; margin-bottom: 1rem;">
+                Your Investment vs. Value Delivered
+            </h2>
+            <div class="roi-equation">
+                <div>
+                    <div class="roi-equation-label">Monthly Value Created</div>
+                    <div class="roi-equation-value">${fmt.money.format(m.valueCreated)}</div>
+                    <div class="info-text" style="color: white; opacity: 0.8; margin-top: 0.5rem;">
+                        ${m.hoursSaved} hours × ${fmt.money.format(m.hourlyRate)}/hr
+                    </div>
+                </div>
+
+                <div class="roi-equation-arrow">−</div>
+
+                <div>
+                    <div class="roi-equation-label">Your Investment</div>
+                    <div class="roi-equation-value">${fmt.money.format(m.pricePerCustomer)}</div>
+                    <div class="info-text" style="color: white; opacity: 0.8; margin-top: 0.5rem;">
+                        per month
+                    </div>
+                </div>
+
+                <div class="roi-equation-arrow">=</div>
+
+                <div>
+                    <div class="roi-equation-label">Your Monthly Savings</div>
+                    <div class="roi-equation-value">${fmt.money.format(netSavings)}</div>
+                    <div class="info-text" style="color: white; opacity: 0.8; margin-top: 0.5rem;">
+                        ${m.roiMultiple.toFixed(1)}x ROI
+                    </div>
+                </div>
+            </div>
+            <p style="text-align: center; font-size: 1.1rem; opacity: 0.9; margin-top: 2rem;">
+                That's <strong>${fmt.money.format(netSavings * 12)}</strong> in annual savings for your team.
+            </p>
+        </div>
+
+        <div class="grid-3">
+            <div class="section">
+                <h3>⏱️ Time Savings</h3>
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary); text-align: center; margin: 1rem 0;">
+                    ${m.hoursSaved} hrs
+                </div>
+                <p style="text-align: center; color: var(--gray-600); font-size: 0.9rem;">
+                    saved per month on location scouting, organization, and client presentations
+                </p>
+            </div>
+
+            <div class="section">
+                <h3>💰 Cost Avoidance</h3>
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--success); text-align: center; margin: 1rem 0;">
+                    ${fmt.money.format(m.valueCreated)}
+                </div>
+                <p style="text-align: center; color: var(--gray-600); font-size: 0.9rem;">
+                    in labor costs avoided through automation and better workflows
+                </p>
+            </div>
+
+            <div class="section">
+                <h3>📈 Revenue Impact</h3>
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--warning); text-align: center; margin: 1rem 0;">
+                    ${m.roiMultiple.toFixed(1)}x
+                </div>
+                <p style="text-align: center; color: var(--gray-600); font-size: 0.9rem;">
+                    return on investment - every dollar spent saves ${m.roiMultiple.toFixed(1)} dollars
+                </p>
+            </div>
+        </div>
+
+        <div class="section full-width">
+            <h2>Pricing Options</h2>
+            <div class="grid-3">
+                <div class="kpi-card" style="border: 2px solid var(--gray-300);">
+                    <div class="kpi-label">Starter</div>
+                    <div class="kpi-value">${fmt.money.format(149)}</div>
+                    <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray-600);">
+                        Perfect for freelancers and solo scouts
+                    </p>
+                </div>
+
+                <div class="kpi-card" style="border: 3px solid var(--primary); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);">
+                    <div style="background: var(--primary); color: white; margin: -1.25rem -1.25rem 1rem; padding: 0.5rem; font-size: 0.8rem; font-weight: 700;">
+                        MOST POPULAR
+                    </div>
+                    <div class="kpi-label">Professional</div>
+                    <div class="kpi-value" style="color: var(--primary);">${fmt.money.format(499)}</div>
+                    <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray-600);">
+                        For production companies and agencies
+                    </p>
+                </div>
+
+                <div class="kpi-card" style="border: 2px solid var(--gray-300);">
+                    <div class="kpi-label">Enterprise</div>
+                    <div class="kpi-value">${fmt.money.format(1499)}</div>
+                    <p style="margin-top: 1rem; font-size: 0.85rem; color: var(--gray-600);">
+                        For streaming platforms and networks
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section full-width" style="background: var(--gray-50); border: 2px solid var(--primary);">
+            <h3 style="color: var(--primary); text-align: center; font-size: 1.25rem;">
+                Ready to save ${fmt.money.format(netSavings * 12)} this year?
+            </h3>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+                <button class="action-btn" onclick="alert('Demo booking functionality')" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                    📅 Book Your Demo
+                </button>
+                <button class="action-btn action-btn-secondary" onclick="alert('Trial functionality')" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                    🚀 Start Free Trial
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function renderProposeMode(m) {
+    const container = document.getElementById('proposeContent');
+
+    // Calculate grant-specific metrics
+    const projectDurationMonths = businessData.projectDuration;
+    const totalProjectCost = m.totalCosts * projectDurationMonths;
+    const personnelCost = m.employeeSalaries * projectDurationMonths;
+    const infrastructureCost = m.infrastructureCosts * projectDurationMonths;
+    const operatingCost = (m.marketingSpend + m.otherMonthlyCosts) * projectDurationMonths;
+
+    const grantAmount = totalProjectCost * (businessData.grantRequestPercent / 100);
+    const ownContribution = totalProjectCost - grantAmount;
+    const ownContributionPercent = 100 - businessData.grantRequestPercent;
+
+    // Projected revenue during grant period
+    const projectedRevenueGrant = m.monthlyRevenue * projectDurationMonths;
+
+    // Job creation
+    const ftesCreated = (personnelCost / projectDurationMonths) / 5000; // Rough estimate: $5K/month = 1 FTE
+
+    const grantPrograms = {
+        voxtur: {
+            name: 'Vöxtur (Growth)',
+            description: 'For companies with proven business model seeking scaling capital',
+            maxGrant: 50000000, // ISK
+            minOwn: 25
+        },
+        sproti: {
+            name: 'Sproti (Sprout)',
+            description: 'Three-phase program for early-stage startups',
+            maxGrant: 15000000,
+            minOwn: 10
+        },
+        throunarfrae: {
+            name: 'Þróunarfræ (Development Seed)',
+            description: 'For R&D and product development projects',
+            maxGrant: 25000000,
+            minOwn: 40
+        }
+    };
+
+    const currentProgram = grantPrograms[businessData.grantProgram];
+
+    container.innerHTML = `
+        <!-- Grant Program Selector -->
+        <div class="section full-width" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 2rem;">
+            <h2 style="color: white; border: none; margin-bottom: 1rem;">Rannís Grant Application Generator</h2>
+            <p style="opacity: 0.9; font-size: 1rem;">
+                Auto-generate grant applications from your business plan. Select your program and export pre-filled forms.
+            </p>
+        </div>
+
+        <div class="grid-2">
+            <!-- Left Column: Configuration -->
+            <div>
+                <div class="section">
+                    <h3>Project Information</h3>
+                    <div class="input-group">
+                        <label>Grant Program</label>
+                        <select id="grantProgramSelect" onchange="updateData('grantProgram', this.value)">
+                            <option value="voxtur" ${businessData.grantProgram === 'voxtur' ? 'selected' : ''}>Vöxtur (Growth)</option>
+                            <option value="sproti" ${businessData.grantProgram === 'sproti' ? 'selected' : ''}>Sproti (Sprout)</option>
+                            <option value="throunarfrae" ${businessData.grantProgram === 'throunarfrae' ? 'selected' : ''}>Þróunarfræ (Development Seed)</option>
+                        </select>
+                        <div class="info-text">${currentProgram.description}</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Project Name</label>
+                        <input type="text" value="${businessData.projectName}"
+                               onchange="updateData('projectName', this.value)">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Project Duration (months)</label>
+                        <input type="number" value="${businessData.projectDuration}" min="6" max="36" step="6"
+                               onchange="updateData('projectDuration', parseFloat(this.value))">
+                        <div class="info-text">Typical: 12-24 months</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Grant Request (%)</label>
+                        <div class="slider-group">
+                            <input type="range" min="25" max="75" step="5" value="${businessData.grantRequestPercent}"
+                                   oninput="updateData('grantRequestPercent', parseFloat(this.value)); document.getElementById('grantPercentDisplay').value = this.value;">
+                            <input type="number" id="grantPercentDisplay" value="${businessData.grantRequestPercent}" style="width: 70px;">
+                        </div>
+                        <div class="info-text">Min own contribution for ${currentProgram.name}: ${currentProgram.minOwn}%</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Project Start</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <select onchange="updateData('startMonth', parseFloat(this.value))" style="flex: 1;">
+                                ${Array.from({length: 12}, (_, i) => {
+                                    const month = i + 1;
+                                    const monthName = new Date(2000, i).toLocaleString('en', {month: 'long'});
+                                    return `<option value="${month}" ${businessData.startMonth === month ? 'selected' : ''}>${monthName}</option>`;
+                                }).join('')}
+                            </select>
+                            <input type="number" value="${businessData.startYear}" style="width: 100px;"
+                                   onchange="updateData('startYear', parseFloat(this.value))">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Company Information</h3>
+                    <div class="input-group">
+                        <label>Company Name</label>
+                        <input type="text" value="${businessData.companyName}"
+                               onchange="updateData('companyName', this.value)"
+                               placeholder="Your Company ehf.">
+                    </div>
+                    <div class="input-group">
+                        <label>Contact Person</label>
+                        <input type="text" value="${businessData.contactPerson}"
+                               onchange="updateData('contactPerson', this.value)"
+                               placeholder="Full Name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Budget Summary -->
+            <div>
+                <div class="section">
+                    <h3>Project Budget Summary</h3>
+                    <div class="cost-breakdown">
+                        <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--gray-700);">Cost Categories</h4>
+                        <div class="breakdown-row">
+                            <span>Personnel Costs (${projectDurationMonths} months)</span>
+                            <span>${fmt.money.format(personnelCost)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Infrastructure/Cloud (Supabase + Vercel)</span>
+                            <span>${fmt.money.format(infrastructureCost)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Marketing & Dissemination</span>
+                            <span>${fmt.money.format(m.marketingSpend * projectDurationMonths)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Other Operating Costs</span>
+                            <span>${fmt.money.format(m.otherMonthlyCosts * projectDurationMonths)}</span>
+                        </div>
+                        <div class="breakdown-row total">
+                            <span>Total Project Cost</span>
+                            <span>${fmt.money.format(totalProjectCost)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Funding Structure</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi-card" style="background: var(--success); color: white;">
+                            <div class="kpi-label" style="color: white;">Grant Requested</div>
+                            <div class="kpi-value" style="color: white;">${fmt.money.format(grantAmount)}</div>
+                            <div class="info-text" style="color: white; opacity: 0.9;">${businessData.grantRequestPercent}% of total</div>
+                        </div>
+                        <div class="kpi-card" style="background: var(--primary); color: white;">
+                            <div class="kpi-label" style="color: white;">Own Contribution</div>
+                            <div class="kpi-value" style="color: white;">${fmt.money.format(ownContribution)}</div>
+                            <div class="info-text" style="color: white; opacity: 0.9;">${ownContributionPercent}% of total</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <h3>Economic Impact</h3>
+                    <div class="cost-breakdown">
+                        <div class="breakdown-row">
+                            <span>Projected Revenue (${projectDurationMonths} months)</span>
+                            <span>${fmt.money.format(projectedRevenueGrant)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Jobs Created (FTEs)</span>
+                            <span>${ftesCreated.toFixed(1)}</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Revenue/Cost Ratio</span>
+                            <span>${(projectedRevenueGrant / totalProjectCost).toFixed(2)}x</span>
+                        </div>
+                        <div class="breakdown-row total">
+                            <span>Sustainability Score</span>
+                            <span class="${m.netProfit > 0 ? 'positive' : 'warning'}">
+                                ${m.netProfit > 0 ? 'Profitable ✓' : 'Needs optimization'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="section full-width">
+            <h2>Export Grant Application</h2>
+            <p style="color: var(--gray-600); margin-bottom: 1.5rem;">
+                Generate pre-filled application documents for ${currentProgram.name}. Download and review before submitting.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <button class="action-btn" onclick="exportGrantBudget()" style="width: 100%;">
+                    📊 Export Budget Spreadsheet
+                </button>
+                <button class="action-btn action-btn-secondary" onclick="exportGrantApplication()" style="width: 100%;">
+                    📄 Export Application Form
+                </button>
+                <button class="action-btn action-btn-secondary" onclick="exportProjectPlan()" style="width: 100%;">
+                    📋 Export Project Plan
+                </button>
+                <button class="action-btn action-btn-secondary" onclick="exportFinancialProjection()" style="width: 100%;">
+                    📈 Export Financial Projection
+                </button>
+            </div>
+        </div>
+
+        <!-- Checklist -->
+        <div class="section full-width" style="background: var(--gray-50); border-left: 4px solid var(--primary);">
+            <h3>Application Checklist</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem;">
+                <div>
+                    <div style="margin-bottom: 0.5rem;">✓ Project budget breakdown</div>
+                    <div style="margin-bottom: 0.5rem;">✓ Financial projections (${projectDurationMonths} months)</div>
+                    <div style="margin-bottom: 0.5rem;">✓ Co-funding commitment (${ownContributionPercent}%)</div>
+                    <div style="margin-bottom: 0.5rem;">✓ Economic impact analysis</div>
+                </div>
+                <div>
+                    <div style="margin-bottom: 0.5rem;">☐ Project description (write separately)</div>
+                    <div style="margin-bottom: 0.5rem;">☐ Market analysis (add to Plan mode)</div>
+                    <div style="margin-bottom: 0.5rem;">☐ Risk assessment (review in Plan mode)</div>
+                    <div style="margin-bottom: 0.5rem;">☐ Team qualifications (upload CVs)</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function updateCTA(mode, m) {
+    const ctaText = document.getElementById('ctaText');
+    const ctaButton = document.getElementById('ctaButton');
+
+    switch(mode) {
+        case 'pitch':
+            if (m.healthScore < 50) {
+                ctaText.textContent = "Let's find your path to profitability.";
+                ctaButton.textContent = "Schedule Strategy Call";
+            } else {
+                ctaText.textContent = "Strong foundation. Let's talk about scaling.";
+                ctaButton.textContent = "Book Growth Consultation";
+            }
+            break;
+        case 'plan':
+            ctaText.textContent = "Ready to execute your plan?";
+            ctaButton.textContent = "Export Full Business Plan";
+            break;
+        case 'present':
+            ctaText.textContent = `Save ${fmt.money.format(m.valueCreated - m.pricePerCustomer)} per month. Book your demo today.`;
+            ctaButton.textContent = "Schedule Your Demo";
+            break;
+        case 'propose':
+            const projectCost = m.totalCosts * businessData.projectDuration;
+            const grantAmt = projectCost * (businessData.grantRequestPercent / 100);
+            ctaText.textContent = `Apply for ${fmt.money.format(grantAmt)} in ${businessData.grantProgram === 'voxtur' ? 'Vöxtur' : businessData.grantProgram === 'sproti' ? 'Sproti' : 'Þróunarfræ'} funding.`;
+            ctaButton.textContent = "Download All Documents";
+            ctaButton.onclick = () => {
+                exportGrantBudget();
+                exportGrantApplication();
+                exportProjectPlan();
+                exportFinancialProjection();
+            };
+            break;
+    }
+}
+
+// =============================
+// DATA UPDATE FUNCTIONS
+// =============================
+function updateData(key, value) {
+    businessData[key] = value;
+    renderMode(currentMode);
+}
+
+function applyStrategy(strategy) {
+    const presets = {
+        'land-expand': {
+            pricingModel: 'tiered',
+            pricePerCustomer: 149,
+            monthlyGrowth: 15,
+            monthlyChurn: 8,
+            marketingSpend: 5000
+        },
+        'enterprise': {
+            pricingModel: 'tiered',
+            pricePerCustomer: 2999,
+            monthlyGrowth: 3,
+            monthlyChurn: 1,
+            marketingSpend: 8000
+        },
+        'volume': {
+            pricingModel: 'usage',
+            pricePerCustomer: 99,
+            monthlyGrowth: 25,
+            monthlyChurn: 12,
+            marketingSpend: 10000
+        }
+    };
+
+    const preset = presets[strategy];
+    Object.keys(preset).forEach(key => {
+        businessData[key] = preset[key];
+    });
+
+    renderMode(currentMode);
+}
+
+// =============================
+// EXPORT FUNCTIONS
+// =============================
+function exportPitch() {
+    const m = calculateMetrics(businessData);
+    const pitch = `We run a film-location SaaS serving ${fmt.integer.format(m.customers)} clients at ${fmt.money.format(m.pricePerCustomer)}/month, generating ${fmt.money.format(m.arr)} ARR with an estimated customer LTV of ${fmt.money.format(m.ltv)} and a ${m.ltvCacRatio.toFixed(1)}:1 LTV:CAC ratio. ${m.monthlyChurn <= 3 ? 'Low churn (' + m.monthlyChurn + '%/mo) indicates strong product-market fit.' : 'Churn (' + m.monthlyChurn + '%/mo) is our primary optimization opportunity.'}`;
+
+    navigator.clipboard.writeText(pitch);
+    alert('Investor one-liner copied to clipboard!');
+}
+
+function exportFullPitch() {
+    const m = calculateMetrics(businessData);
+    const summary = `
+# Film Location Platform - Business Summary
+
+## Headline Metrics
+- **ARR:** ${fmt.money.format(m.arr)}
+- **Monthly Profit:** ${fmt.money.format(m.netProfit)} (${m.profitMargin.toFixed(1)}% margin)
+- **Health Score:** ${m.healthScore}/100
+- **LTV:CAC Ratio:** ${m.ltvCacRatio.toFixed(1)}:1
+
+## Value Proposition
+We save each client ${fmt.money.format(m.valueCreated)}/month while charging ${fmt.money.format(m.pricePerCustomer)}/month.
+That's a ${m.roiMultiple.toFixed(1)}x ROI for our customers.
+
+## 12-Month Projection
+- Starting customers: ${fmt.integer.format(m.customers)}
+- Projected customers: ${fmt.integer.format(m.projectedCustomers)}
+- Projected revenue: ${fmt.money.format(m.totalRevenue)}
+- Projected profit: ${fmt.money.format(m.totalRevenue - m.totalCostsProjected)}
+
+## Unit Economics
+- Customer LTV: ${fmt.money.format(m.ltv)}
+- CAC: ${fmt.money.format(m.cac)}
+- Gross Margin: ${m.grossMargin.toFixed(1)}%
+- Monthly Churn: ${m.monthlyChurn}%
+`;
+
+    // Create downloadable file
+    const blob = new Blob([summary], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'business-summary.md';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Grant export functions
+function exportGrantBudget() {
+    const m = calculateMetrics(businessData);
+    const projectDuration = businessData.projectDuration;
+    const totalProjectCost = m.totalCosts * projectDuration;
+    const grantAmount = totalProjectCost * (businessData.grantRequestPercent / 100);
+    const ownContribution = totalProjectCost - grantAmount;
+
+    const budget = `# ${businessData.projectName} - Project Budget
+## Grant Application: ${businessData.grantProgram === 'voxtur' ? 'Vöxtur' : businessData.grantProgram === 'sproti' ? 'Sproti' : 'Þróunarfræ'}
+
+### Project Details
+- **Duration:** ${projectDuration} months
+- **Start Date:** ${new Date(2000, businessData.startMonth - 1).toLocaleString('en', {month: 'long'})} ${businessData.startYear}
+- **Company:** ${businessData.companyName || 'Your Company'}
+- **Contact:** ${businessData.contactPerson || 'Contact Person'}
+
+### Budget Summary
+
+| Category | Amount | Notes |
+|----------|--------|-------|
+| **Personnel Costs** | ${fmt.money.format(m.employeeSalaries * projectDuration)} | Team salaries for ${projectDuration} months |
+| **Infrastructure** | ${fmt.money.format(m.infrastructureCosts * projectDuration)} | Supabase + Vercel cloud hosting |
+| **Marketing & Dissemination** | ${fmt.money.format(m.marketingSpend * projectDuration)} | User acquisition and outreach |
+| **Other Operating Costs** | ${fmt.money.format(m.otherMonthlyCosts * projectDuration)} | Tools, legal, admin |
+| **TOTAL PROJECT COST** | **${fmt.money.format(totalProjectCost)}** | |
+
+### Funding Structure
+
+| Source | Amount | Percentage |
+|--------|--------|------------|
+| **Grant Requested** | **${fmt.money.format(grantAmount)}** | ${businessData.grantRequestPercent}% |
+| **Own Contribution** | **${fmt.money.format(ownContribution)}** | ${(100 - businessData.grantRequestPercent)}% |
+| **TOTAL** | **${fmt.money.format(totalProjectCost)}** | 100% |
+
+### Monthly Breakdown (Average)
+- Personnel: ${fmt.money.format(m.employeeSalaries)}
+- Infrastructure: ${fmt.money.format(m.infrastructureCosts)}
+- Marketing: ${fmt.money.format(m.marketingSpend)}
+- Other: ${fmt.money.format(m.otherMonthlyCosts)}
+- **Monthly Total:** ${fmt.money.format(m.totalCosts)}
+`;
+
+    downloadFile(budget, 'grant-budget.md', 'text/markdown');
+}
+
+function exportGrantApplication() {
+    const m = calculateMetrics(businessData);
+    const projectDuration = businessData.projectDuration;
+    const totalProjectCost = m.totalCosts * projectDuration;
+    const grantAmount = totalProjectCost * (businessData.grantRequestPercent / 100);
+    const projectedRevenue = m.monthlyRevenue * projectDuration;
+    const ftesCreated = (m.employeeSalaries / 5000);
+
+    const application = `# Grant Application Form
+## ${businessData.grantProgram === 'voxtur' ? 'Vöxtur (Growth)' : businessData.grantProgram === 'sproti' ? 'Sproti (Sprout)' : 'Þróunarfræ (Development Seed)'} Program
+
+### 1. Project Information
+**Project Name:** ${businessData.projectName}
+**Company:** ${businessData.companyName || '[Company Name]'}
+**Contact Person:** ${businessData.contactPerson || '[Name]'}
+**Duration:** ${projectDuration} months
+**Start Date:** ${new Date(2000, businessData.startMonth - 1).toLocaleString('en', {month: 'long'})} ${businessData.startYear}
+
+### 2. Financial Summary
+- **Total Project Cost:** ${fmt.money.format(totalProjectCost)}
+- **Grant Requested:** ${fmt.money.format(grantAmount)} (${businessData.grantRequestPercent}%)
+- **Own Contribution:** ${fmt.money.format(totalProjectCost - grantAmount)} (${100 - businessData.grantRequestPercent}%)
+
+### 3. Economic Impact
+- **Projected Revenue (${projectDuration} months):** ${fmt.money.format(projectedRevenue)}
+- **Jobs Created:** ${ftesCreated.toFixed(1)} FTEs
+- **Revenue/Cost Ratio:** ${(projectedRevenue / totalProjectCost).toFixed(2)}x
+- **Sustainability:** ${m.netProfit > 0 ? 'Profitable from month 1' : 'Break-even by month ' + Math.ceil(m.breakEvenCustomers / (m.customers * m.monthlyGrowth / 100))}
+
+### 4. Project Description
+[Add your project description here]
+
+**Problem Statement:**
+Film production companies and location scouts currently struggle with:
+- Inefficient location database management
+- Time-consuming manual processes
+- Lack of collaboration tools
+- High costs of lost or corrupted location libraries
+
+**Solution:**
+Our platform provides:
+- Cloud-based location database management
+- Real-time collaboration features
+- ROI: Saves customers ${fmt.money.format(m.valueCreated)}/month vs ${fmt.money.format(m.pricePerCustomer)} cost (${m.roiMultiple.toFixed(1)}x)
+
+### 5. Market Opportunity
+- **Target Market:** Film/TV production companies, ad agencies, location scouts
+- **Current Customers:** ${m.customers}
+- **Growth Rate:** ${m.monthlyGrowth}% monthly
+- **Churn Rate:** ${m.monthlyChurn}% monthly (indicating ${m.monthlyChurn < 5 ? 'strong' : 'developing'} product-market fit)
+
+### 6. Team & Qualifications
+[Add team information and relevant experience]
+
+### 7. Risk Assessment
+**Technical Risks:** Mitigated by using proven cloud infrastructure (Supabase, Vercel)
+**Market Risks:** ${m.ltvCacRatio > 3 ? 'Low - strong unit economics with LTV:CAC of ' + m.ltvCacRatio.toFixed(1) + ':1' : 'Moderate - optimizing customer acquisition'}
+**Financial Risks:** ${m.netProfit > 0 ? 'Low - profitable business model' : 'Managed - clear path to profitability with customer growth'}
+`;
+
+    downloadFile(application, 'grant-application.md', 'text/markdown');
+}
+
+function exportProjectPlan() {
+    const m = calculateMetrics(businessData);
+
+    const plan = `# ${businessData.projectName} - Project Plan
+
+## Executive Summary
+Film location database platform targeting production companies, agencies, and scouts in the film/TV industry.
+
+## Objectives
+1. Build scalable cloud platform (Months 1-6)
+2. Acquire ${Math.ceil(m.customers * Math.pow(1 + m.monthlyGrowth / 100, businessData.projectDuration))} customers (Months 1-${businessData.projectDuration})
+3. Achieve ${fmt.money.format(m.monthlyRevenue * Math.pow(1 + m.monthlyGrowth / 100, businessData.projectDuration))} MRR by end of project
+
+## Milestones
+
+### Phase 1: Development (Months 1-6)
+- Platform architecture & infrastructure setup
+- Core features: location database, image management, collaboration
+- Beta testing with ${Math.ceil(m.customers * 0.1)} pilot customers
+- **Budget:** ${fmt.money.format(m.totalCosts * 6)}
+
+### Phase 2: Market Entry (Months 7-12)
+- Public launch
+- Customer acquisition: target ${Math.ceil(m.customers * 0.4)} customers
+- Marketing & sales infrastructure
+- **Budget:** ${fmt.money.format(m.totalCosts * 6)}
+
+### Phase 3: Growth (Months 13-${businessData.projectDuration})
+- Scale customer base to ${Math.ceil(m.customers * Math.pow(1 + m.monthlyGrowth / 100, businessData.projectDuration))} customers
+- Optimize operations and margins
+- Achieve profitability target
+- **Budget:** ${fmt.money.format(m.totalCosts * (businessData.projectDuration - 12))}
+
+## Budget Allocation
+- **Personnel:** ${((m.employeeSalaries / m.totalCosts) * 100).toFixed(0)}%
+- **Infrastructure:** ${((m.infrastructureCosts / m.totalCosts) * 100).toFixed(0)}%
+- **Marketing:** ${((m.marketingSpend / m.totalCosts) * 100).toFixed(0)}%
+- **Other:** ${((m.otherMonthlyCosts / m.totalCosts) * 100).toFixed(0)}%
+
+## Success Metrics
+- Monthly Recurring Revenue (MRR): ${fmt.money.format(m.monthlyRevenue)}
+- Customer Acquisition Cost (CAC): ${fmt.money.format(m.cac)}
+- Customer Lifetime Value (LTV): ${fmt.money.format(m.ltv)}
+- LTV:CAC Ratio: ${m.ltvCacRatio.toFixed(1)}:1 (target: >3:1)
+- Gross Margin: ${m.grossMargin.toFixed(1)}% (target: >70%)
+- Monthly Churn: ${m.monthlyChurn}% (target: <5%)
+`;
+
+    downloadFile(plan, 'project-plan.md', 'text/markdown');
+}
+
+function exportFinancialProjection() {
+    const m = calculateMetrics(businessData);
+    const projectDuration = businessData.projectDuration;
+
+    let projection = `# ${businessData.projectName} - Financial Projection (${projectDuration} Months)
+
+## Assumptions
+- Starting Customers: ${m.customers}
+- Monthly Growth: ${m.monthlyGrowth}%
+- Monthly Churn: ${m.monthlyChurn}%
+- Price per Customer: ${fmt.money.format(m.pricePerCustomer)}
+
+## Monthly Projection
+
+| Month | Customers | Revenue | Costs | Profit | Cumulative Profit |
+|-------|-----------|---------|-------|--------|-------------------|
+`;
+
+    let runningCustomers = m.customers;
+    let cumulativeProfit = 0;
+
+    for (let month = 1; month <= projectDuration; month++) {
+        const newCustomers = runningCustomers * (m.monthlyGrowth / 100);
+        const churnedCustomers = runningCustomers * (m.monthlyChurn / 100);
+        runningCustomers = runningCustomers + newCustomers - churnedCustomers;
+
+        const monthlyRev = runningCustomers * m.pricePerCustomer;
+        const monthlyCost = m.totalCosts * (runningCustomers / m.customers); // Scale costs with customers
+        const monthlyProfit = monthlyRev - monthlyCost;
+        cumulativeProfit += monthlyProfit;
+
+        projection += `| ${month} | ${runningCustomers.toFixed(0)} | ${fmt.money.format(monthlyRev)} | ${fmt.money.format(monthlyCost)} | ${fmt.money.format(monthlyProfit)} | ${fmt.money.format(cumulativeProfit)} |\n`;
+    }
+
+    projection += `\n## Summary
+- **Final Month Customers:** ${runningCustomers.toFixed(0)}
+- **Final Month Revenue:** ${fmt.money.format(runningCustomers * m.pricePerCustomer)}
+- **Total ${projectDuration}-Month Revenue:** ${fmt.money.format(m.monthlyRevenue * projectDuration * (1 + m.monthlyGrowth / 200))}
+- **Total ${projectDuration}-Month Costs:** ${fmt.money.format(m.totalCosts * projectDuration)}
+- **Net Profit:** ${fmt.money.format(cumulativeProfit)}
+- **ROI:** ${((cumulativeProfit / (m.totalCosts * projectDuration)) * 100).toFixed(1)}%
+`;
+
+    downloadFile(projection, 'financial-projection.md', 'text/markdown');
+}
+
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// =============================
+// INITIALIZATION
+// =============================
+renderMode('pitch');
+</script>
+</body>
+</html>

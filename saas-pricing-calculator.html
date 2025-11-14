@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaaS Photo Platform - Comprehensive Business Calculator</title>
+    <title>Film Location Database Platform - Business Calculator</title>
     <style>
 * {
     margin: 0;
@@ -365,8 +365,14 @@ select:focus {
 <body>
     <div class="container">
         <header>
-            <h1>SaaS Photo Platform - Comprehensive Business Calculator</h1>
-            <p class="subtitle">Complete cost analysis, revenue projections, and business planning</p>
+            <h1>Turn Your Location Library Into Predictable Recurring Revenue</h1>
+            <p class="subtitle">
+                Model storage, bandwidth, and pricing for film location databases — see in seconds
+                whether your platform prints money or burns cash.
+            </p>
+            <p class="subtitle" style="margin-top:8px;font-size:13px;opacity:0.85;">
+                Built for production companies, scouts, and platforms using AWS/Supabase/Vercel-style usage pricing.
+            </p>
         </header>
 
         <div class="tabs">
@@ -382,60 +388,211 @@ select:focus {
                 <!-- Left Column: Inputs -->
                 <div>
                     <div class="section">
-                        <h2>Platform Usage</h2>
+                        <h2>Customer Segment & Usage</h2>
 
                         <div class="input-group">
-                            <label for="customers">Number of Customers</label>
-                            <input type="number" id="customers" value="100" min="0" step="1">
+                            <label for="customerSegment">Primary Customer Type</label>
+                            <select id="customerSegment" onchange="updateSegmentDefaults()">
+                                <option value="production_company">Production Company (Film/TV)</option>
+                                <option value="ad_agency">Advertising Agency</option>
+                                <option value="location_scout">Location Scout/Freelancer</option>
+                                <option value="streaming_platform">Streaming Platform/Network</option>
+                                <option value="indie_filmmaker">Independent Filmmaker</option>
+                            </select>
+                            <div class="info-text">Adjusts pricing and usage assumptions</div>
+                        </div>
+
+                        <div id="segmentStory" class="alert-box alert-info" style="margin-top:10px;">
+                            <strong>Production Company (Film/TV)</strong><br>
+                            Multi-project clients with long lead times and annual contracts. Lower churn (3%), mid-range database size.
+                            Winning one production company can pay for your infrastructure for months.
                         </div>
 
                         <div class="input-group">
-                            <label for="locationsPerCustomer">Locations per Customer (avg)</label>
-                            <input type="number" id="locationsPerCustomer" value="10" min="0" step="1">
+                            <label for="customers">Number of Active Clients</label>
+                            <input type="number" id="customers" value="50" min="0" step="1">
+                            <div class="info-text">Production companies, agencies, or individual subscribers</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="locationsPerCustomer">Locations per Client (avg)</label>
+                            <input type="number" id="locationsPerCustomer" value="150" min="0" step="10">
+                            <div class="info-text">Location database size per client</div>
                         </div>
 
                         <div class="input-group">
                             <label for="imagesPerLocation">Images per Location (avg)</label>
-                            <input type="number" id="imagesPerLocation" value="20" min="0" step="1">
+                            <input type="number" id="imagesPerLocation" value="25" min="0" step="1">
+                            <div class="info-text">Interior/exterior shots, angles, details</div>
                         </div>
 
                         <div class="input-group">
                             <label for="avgImageSize">Average Image Size (MB)</label>
-                            <input type="number" id="avgImageSize" value="2" min="0" step="0.1">
-                            <div class="info-text">Typical: 1-3 MB for high-quality photos</div>
+                            <input type="number" id="avgImageSize" value="4" min="0" step="0.5">
+                            <div class="info-text">Film industry standard: 3-6 MB high-resolution</div>
                         </div>
 
                         <div class="input-group">
                             <label for="monthlyViewsPerImage">Monthly Views per Image (avg)</label>
-                            <input type="number" id="monthlyViewsPerImage" value="10" min="0" step="1">
-                            <div class="info-text">For bandwidth calculation</div>
+                            <input type="number" id="monthlyViewsPerImage" value="5" min="0" step="1">
+                            <div class="info-text">Scouting reviews, client presentations, portfolio browsing</div>
                         </div>
                     </div>
 
                     <div class="section">
-                        <h2>Pricing & Revenue</h2>
+                        <h2>Pricing & Revenue Models</h2>
 
                         <div class="input-group">
-                            <label for="pricePerCustomer">Price per Customer per Month ($)</label>
-                            <input type="number" id="pricePerCustomer" value="49" min="0" step="1">
+                            <label for="pricingModel">Pricing Model</label>
+                            <select id="pricingModel" onchange="updatePricingModel()">
+                                <option value="tiered" selected>Tiered Subscription (Traditional SaaS)</option>
+                                <option value="usage">AWS-Style Pay-As-You-Grow</option>
+                                <option value="hybrid">Hybrid (Base + Usage)</option>
+                                <option value="backup">Backup/Archive (IBM Cloud Strategy)</option>
+                            </select>
+                            <div class="info-text">Late-market entry strategies: freemium, usage, or backup positioning</div>
+                        </div>
+
+                        <div class="alert-box alert-info" id="pricingAnchor" style="margin-top:15px;">
+                            <strong>💡 Reality Check:</strong><br>
+                            One day of location fees for a typical shoot runs $3–10K. One lost hard drive or corrupt location library
+                            costs more than a year of your Studio tier. If you're charging less than a single day of location fees per month,
+                            you're likely under-pricing the value you provide.
+                        </div>
+
+                        <div id="backupStrategyInfo" style="display: none; background: #fff3e0; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #ff9800;">
+                            <strong>💾 Backup/Archive Strategy (IBM Cloud Approach)</strong><br>
+                            <span style="font-size: 13px; color: #555;">
+                                <strong>Target: Customers already using competitors</strong> (Photoshelter, Widen, SmugMug Pro)<br>
+                                IBM offered free ingress/egress to become "backup cloud" - we do similar:<br>
+                                <br>
+                                <strong>Phase 1 - Foot in the Door:</strong><br>
+                                • <strong>Free unlimited migration</strong> from any competitor<br>
+                                • <strong>Free ongoing sync API</strong> - mirror their primary system<br>
+                                • <strong>50% discount "Archive tier"</strong> - disaster recovery positioning<br>
+                                • <strong>Zero lock-in</strong> - free unlimited export, all metadata<br>
+                                <br>
+                                <strong>Phase 2 - Demonstrate Value:</strong><br>
+                                • Film-specific features their current system lacks<br>
+                                • Faster search, better metadata, production workflows<br>
+                                • Side-by-side usage reveals our superiority<br>
+                                <br>
+                                <strong>Phase 3 - Role Reversal:</strong><br>
+                                • We become primary (6-12 months), they become archive<br>
+                                • Upgrade to full price once we're the primary system<br>
+                                <br>
+                                <em>Calculator models 50% discount for archive positioning</em>
+                            </span>
+                        </div>
+
+                        <div id="tieredPricingSection">
+                            <div class="input-group">
+                                <label for="pricingTier">Pricing Tier</label>
+                                <select id="pricingTier" onchange="updatePricingTier()">
+                                    <option value="custom">Custom Pricing</option>
+                                    <option value="free">Free Tier (Always Free)</option>
+                                    <option value="starter">Starter ($29/month)</option>
+                                    <option value="freelancer">Freelancer ($149/month)</option>
+                                    <option value="professional" selected>Professional ($499/month)</option>
+                                    <option value="studio">Studio ($1,499/month)</option>
+                                    <option value="enterprise">Enterprise ($3,999/month)</option>
+                                </select>
+                                <div class="info-text">Fixed monthly subscription tiers (AWS-style free tier available)</div>
+                            </div>
+
+                            <div id="freemiumSection" style="display: none; background: #e8f9f0; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #28a745;">
+                                <strong>🎁 Free Tier Strategy (AWS-style)</strong><br>
+                                <span style="font-size: 13px; color: #555;">
+                                    Like AWS Free Tier - get users hooked, convert to paid:<br>
+                                    • <strong>Limits:</strong> 25 locations, 10 images each, 1GB storage<br>
+                                    • <strong>Perfect for:</strong> Film students, indie shorts, testing platform<br>
+                                    • <strong>Conversion goal:</strong> 2-5% to paid tiers within 90 days<br>
+                                    • <strong>Cost per free user:</strong> ~$0.50-2/month infrastructure
+                                </span>
+                            </div>
+
+                            <div id="starterSection" style="display: none; background: #fff3cd; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #ffc107;">
+                                <strong>🚀 Starter Tier (Like Lightsail)</strong><br>
+                                <span style="font-size: 13px; color: #555;">
+                                    Ultra-simple, ultra-cheap entry point:<br>
+                                    • <strong>$29/month flat</strong> - no surprises, no overages<br>
+                                    • <strong>Limits:</strong> 50 locations, 15 images each, 5GB storage<br>
+                                    • <strong>Perfect for:</strong> Solo location scouts, small indie films<br>
+                                    • <strong>Value prop:</strong> Coffee shop price for professional tool
+                                </span>
+                            </div>
+                        </div>
+
+                        <div id="usagePricingInfo" style="display: none; background: #e8f4f8; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #2196F3;">
+                            <strong>💡 AWS-Style Usage-Based Pricing</strong><br>
+                            <span style="font-size: 13px; color: #555;">
+                                Like AWS revolutionized infrastructure: pay only for what you use.<br>
+                                • <strong>Storage:</strong> $0.08/GB/month (raw AWS S3: ~$0.023/GB)<br>
+                                • <strong>Bandwidth:</strong> $0.12/GB (raw AWS CloudFront: ~$0.085/GB)<br>
+                                • <strong>Base platform fee:</strong> $99/month (platform access, search UI, collaboration tools, support)<br>
+                                <span style="color: #1976d2; font-size: 12px; display: block; margin-top: 8px;">
+                                    <em>Note: Our pricing includes managed services, security, metadata management, collaboration features, and support—not just raw storage/bandwidth like AWS infrastructure.</em>
+                                </span>
+                                <em style="display: block; margin-top: 8px;">Perfect for projects with variable intensity (heavy pre-production, quiet during shooting)</em>
+                            </span>
                         </div>
 
                         <div class="input-group">
-                            <label for="setupFee">One-time Setup Fee ($)</label>
-                            <input type="number" id="setupFee" value="0" min="0" step="1">
-                            <div class="info-text">Charged once per new customer</div>
+                            <label for="pricePerCustomer">Price per Client per Month ($)</label>
+                            <input type="number" id="pricePerCustomer" value="499" min="0" step="10">
+                            <div class="info-text">Average subscription price across all clients</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="setupFee">Onboarding/Setup Fee ($)</label>
+                            <input type="number" id="setupFee" value="500" min="0" step="50">
+                            <div class="info-text">One-time fee for data migration, training, customization</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="projectFeeRevenue">Monthly Project-Based Revenue ($)</label>
+                            <input type="number" id="projectFeeRevenue" value="0" min="0" step="100">
+                            <div class="info-text">Additional revenue from freelancer/single-project access</div>
                         </div>
 
                         <div class="input-group">
                             <label for="monthlyChurn">Monthly Churn Rate (%)</label>
-                            <input type="number" id="monthlyChurn" value="5" min="0" max="100" step="0.1">
-                            <div class="info-text">Percentage of customers who cancel each month</div>
+                            <input type="number" id="monthlyChurn" value="3" min="0" max="100" step="0.5">
+                            <div class="info-text">Film industry typically has lower churn (long contracts)</div>
                         </div>
 
                         <div class="input-group">
                             <label for="monthlyGrowth">Monthly Growth Rate (%)</label>
-                            <input type="number" id="monthlyGrowth" value="10" min="0" max="1000" step="1">
-                            <div class="info-text">New customer acquisition rate</div>
+                            <input type="number" id="monthlyGrowth" value="8" min="0" max="1000" step="1">
+                            <div class="info-text">New client acquisition rate</div>
+                        </div>
+                    </div>
+
+                    <div class="section" id="freemiumMetrics" style="display: none;">
+                        <h2>Freemium Strategy Metrics</h2>
+
+                        <div class="input-group">
+                            <label for="freeUsers">Number of Free Tier Users</label>
+                            <input type="number" id="freeUsers" value="500" min="0" step="50">
+                            <div class="info-text">Film students, indie filmmakers, trial users</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="conversionRate">Free → Paid Conversion Rate (%)</label>
+                            <input type="number" id="conversionRate" value="3" min="0" max="100" step="0.5">
+                            <div class="info-text">AWS achieves 2-5% after 90 days; SaaS average 2-4%</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="avgConversionTime">Avg Days to Convert</label>
+                            <input type="number" id="avgConversionTime" value="60" min="0" max="365" step="10">
+                            <div class="info-text">How long before free users upgrade</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="costPerFreeUser">Cost per Free User ($/month)</label>
+                            <input type="number" id="costPerFreeUser" value="1.5" min="0" max="10" step="0.5">
+                            <div class="info-text">Infrastructure, support, bandwidth for free tier</div>
                         </div>
                     </div>
 
@@ -464,19 +621,21 @@ select:focus {
                         <h2>Additional Costs</h2>
 
                         <div class="input-group">
-                            <label for="employeeSalaries">Monthly Salaries/Contractors ($)</label>
-                            <input type="number" id="employeeSalaries" value="0" min="0" step="100">
+                            <label for="employeeSalaries">Monthly Team Costs ($)</label>
+                            <input type="number" id="employeeSalaries" value="15000" min="0" step="1000">
+                            <div class="info-text">Developers, customer success, location curators</div>
                         </div>
 
                         <div class="input-group">
-                            <label for="marketingSpend">Monthly Marketing Spend ($)</label>
-                            <input type="number" id="marketingSpend" value="0" min="0" step="100">
+                            <label for="marketingSpend">Monthly Sales & Marketing ($)</label>
+                            <input type="number" id="marketingSpend" value="3000" min="0" step="500">
+                            <div class="info-text">Film festival presence, trade shows, partnerships</div>
                         </div>
 
                         <div class="input-group">
-                            <label for="otherMonthlyCosts">Other Monthly Costs ($)</label>
-                            <input type="number" id="otherMonthlyCosts" value="0" min="0" step="1">
-                            <div class="info-text">Domain, email, analytics, etc.</div>
+                            <label for="otherMonthlyCosts">Other Operating Costs ($)</label>
+                            <input type="number" id="otherMonthlyCosts" value="500" min="0" step="100">
+                            <div class="info-text">Legal (contracts/licensing), insurance, tools</div>
                         </div>
                     </div>
                 </div>
@@ -509,9 +668,13 @@ select:focus {
 
                     <div class="section">
                         <h2>Cost Breakdown</h2>
+                        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+                            ☁️ <strong>AWS-Style Infrastructure:</strong> Like AWS S3 + CloudFront, you pay a base fee + usage overages.
+                            Costs scale automatically with your location library size and scouting activity.
+                        </p>
 
                         <div class="cost-breakdown">
-                            <h3>Supabase Costs</h3>
+                            <h3>Supabase Costs (Storage & Bandwidth)</h3>
                             <div class="breakdown-row">
                                 <span>Pro Plan Base</span>
                                 <span>$<span id="baseCost">120.00</span></span>
@@ -531,7 +694,7 @@ select:focus {
                         </div>
 
                         <div class="cost-breakdown">
-                            <h3>Vercel Costs</h3>
+                            <h3>Vercel Costs (Frontend Hosting)</h3>
                             <div class="breakdown-row">
                                 <span>Pro Plan (<span id="vercelSeats">1</span> seats @ $20/seat)</span>
                                 <span>$<span id="vercelBaseCost">20.00</span></span>
@@ -904,6 +1067,21 @@ select:focus {
         <div id="recommendations" class="tab-content">
             <div class="main-content">
                 <div class="section full-width">
+                    <h2>Business Classification</h2>
+                    <div id="businessClassification" class="highlight-box" style="text-align: left; padding: 20px;">
+                        <div style="font-size: 16px; margin-bottom: 10px;">You are building:</div>
+                        <div id="classificationText" style="font-size: 18px; font-weight: 600; line-height: 1.5;"></div>
+                    </div>
+                </div>
+
+                <div class="section full-width">
+                    <h2>Investor One-Liner</h2>
+                    <div class="alert-box alert-info">
+                        <p id="investorOneLiner" style="font-style:italic;font-size:15px;line-height:1.6;margin:0;"></p>
+                    </div>
+                </div>
+
+                <div class="section full-width">
                     <h2>Business Health Assessment</h2>
                     <div id="healthMetrics"></div>
                 </div>
@@ -938,15 +1116,167 @@ const VERCEL_PRO_PER_SEAT = 20;
 const VERCEL_BANDWIDTH_INCLUDED = 1000; // 1TB = 1000GB
 const VERCEL_BANDWIDTH_COST = 0.15;
 
+// Usage-based pricing (AWS-style)
+const USAGE_BASE_FEE = 99; // Monthly platform access fee per customer
+const USAGE_STORAGE_PER_GB = 0.08; // Per GB/month storage (applied to aggregate total storage across all customers)
+const USAGE_BANDWIDTH_PER_GB = 0.12; // Per GB bandwidth (applied to aggregate total bandwidth across all customers)
+
+// Pricing tiers
+const TIER_FREE = 0; // Always free tier
+const TIER_STARTER = 29; // Like Lightsail - ultra-cheap entry
+const TIER_FREELANCER = 149;
+const TIER_PROFESSIONAL = 499;
+const TIER_STUDIO = 1499;
+const TIER_ENTERPRISE = 3999;
+
+// Number formatters
+const money = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0
+});
+
+const moneyDecimal = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+});
+
+const integer = new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 0
+});
+
+// Customer segment stories
+const segmentStories = {
+    production_company: `
+        <strong>Production Company (Film/TV)</strong><br>
+        Multi-project clients with long lead times and annual contracts. Lower churn (3%), mid-range database size.
+        Winning one production company can pay for your infrastructure for months.
+    `,
+    ad_agency: `
+        <strong>Advertising Agency</strong><br>
+        High-volume users with frequent campaigns and many client presentations. Larger databases (300+ locations),
+        higher viewing activity. Premium pricing justified by agency margins and client billing pass-through.
+    `,
+    location_scout: `
+        <strong>Location Scout/Freelancer</strong><br>
+        Largest databases (500+ locations) but lower ARPU. Higher churn (8%) as they work project-to-project.
+        Volume play: many scouts paying modest fees adds up. Great candidates for Freelancer tier.
+    `,
+    streaming_platform: `
+        <strong>Streaming Platform/Network</strong><br>
+        Fewer customers, but massive contracts. Lowest churn (2%), highest LTV. One streaming platform client
+        can fund your entire operation. Focus on white-glove service and enterprise features.
+    `,
+    indie_filmmaker: `
+        <strong>Independent Filmmaker</strong><br>
+        Smallest databases, lowest pricing tier, highest churn (10%). Great for freemium conversion funnel:
+        get them hooked during pre-production, convert when they see the value. Gateway to bigger projects.
+    `
+};
+
+// Business classification generator
+function classifyBusiness(metrics) {
+    const {
+        infrastructureCosts, totalCosts, monthlyChurn, pricePerCustomer,
+        profitMargin, grossMargin
+    } = metrics;
+
+    let classifications = [];
+
+    // Infrastructure intensity
+    const infraRatio = infrastructureCosts / totalCosts;
+    if (infraRatio > 0.3) {
+        classifications.push('infrastructure-heavy');
+    } else if (infraRatio > 0.15) {
+        classifications.push('balanced infrastructure');
+    } else {
+        classifications.push('people-heavy');
+    }
+
+    // Margin quality
+    if (profitMargin >= 50) {
+        classifications.push('highly profitable');
+    } else if (profitMargin >= 20) {
+        classifications.push('healthy margins');
+    } else if (profitMargin >= 0) {
+        classifications.push('low margins');
+    } else {
+        classifications.push('operating at a loss');
+    }
+
+    // Market positioning
+    if (pricePerCustomer >= 1000) {
+        classifications.push('enterprise-focused');
+    } else if (pricePerCustomer >= 200) {
+        classifications.push('mid-market');
+    } else {
+        classifications.push('mass-market');
+    }
+
+    // Churn profile
+    if (monthlyChurn <= 3) {
+        classifications.push('sticky customers');
+    } else if (monthlyChurn <= 7) {
+        classifications.push('moderate retention');
+    } else {
+        classifications.push('high churn');
+    }
+
+    // Scalability assessment
+    if (grossMargin >= 70 && profitMargin >= 20) {
+        classifications.push('highly scalable');
+    } else if (infraRatio > 0.4) {
+        classifications.push('scale requires cost optimization');
+    }
+
+    return classifications;
+}
+
+// Generate investor one-liner
+function buildInvestorOneLiner(metrics) {
+    const { monthlyRevenue, ltv, ltvCacRatio, customers, pricePerCustomer, monthlyChurn } = metrics;
+    const arr = monthlyRevenue * 12;
+
+    let line = `We run a film-location SaaS serving ${integer.format(customers)} clients at ${money.format(pricePerCustomer)}/month, `;
+    line += `generating ${money.format(arr)} ARR with `;
+
+    if (ltv && !isNaN(ltv) && isFinite(ltv)) {
+        line += `an estimated customer LTV of ${money.format(ltv)}`;
+    } else {
+        line += `strong customer relationships`;
+    }
+
+    if (ltvCacRatio && !isNaN(ltvCacRatio) && isFinite(ltvCacRatio) && ltvCacRatio > 0) {
+        line += ` and a ${ltvCacRatio.toFixed(1)}:1 LTV:CAC ratio`;
+    }
+
+    line += `. `;
+
+    // Add churn context
+    if (monthlyChurn <= 3) {
+        line += `Low churn (${monthlyChurn}%/mo) indicates strong product-market fit.`;
+    } else if (monthlyChurn >= 8) {
+        line += `Churn (${monthlyChurn}%/mo) represents our primary optimization opportunity.`;
+    }
+
+    return line;
+}
+
 // Get all input elements
 const inputs = {
+    customerSegment: document.getElementById('customerSegment'),
+    pricingModel: document.getElementById('pricingModel'),
     customers: document.getElementById('customers'),
     locationsPerCustomer: document.getElementById('locationsPerCustomer'),
     imagesPerLocation: document.getElementById('imagesPerLocation'),
     avgImageSize: document.getElementById('avgImageSize'),
     monthlyViewsPerImage: document.getElementById('monthlyViewsPerImage'),
+    pricingTier: document.getElementById('pricingTier'),
     pricePerCustomer: document.getElementById('pricePerCustomer'),
     setupFee: document.getElementById('setupFee'),
+    projectFeeRevenue: document.getElementById('projectFeeRevenue'),
     monthlyChurn: document.getElementById('monthlyChurn'),
     monthlyGrowth: document.getElementById('monthlyGrowth'),
     useVercel: document.getElementById('useVercel'),
@@ -954,7 +1284,11 @@ const inputs = {
     vercelBandwidthMultiplier: document.getElementById('vercelBandwidthMultiplier'),
     employeeSalaries: document.getElementById('employeeSalaries'),
     marketingSpend: document.getElementById('marketingSpend'),
-    otherMonthlyCosts: document.getElementById('otherMonthlyCosts')
+    otherMonthlyCosts: document.getElementById('otherMonthlyCosts'),
+    freeUsers: document.getElementById('freeUsers'),
+    conversionRate: document.getElementById('conversionRate'),
+    avgConversionTime: document.getElementById('avgConversionTime'),
+    costPerFreeUser: document.getElementById('costPerFreeUser')
 };
 
 // Helper function to safely set HTML content (prevents XSS)
@@ -980,6 +1314,98 @@ Object.values(inputs).forEach(input => {
     input.addEventListener('input', calculate);
     input.addEventListener('change', calculate);
 });
+
+// Customer segment presets
+function updateSegmentDefaults() {
+    const segment = inputs.customerSegment.value;
+    const presets = {
+        production_company: { locations: 150, images: 25, views: 5, price: 499, churn: 3 },
+        ad_agency: { locations: 300, images: 20, views: 15, price: 999, churn: 4 },
+        location_scout: { locations: 500, images: 30, views: 3, price: 199, churn: 8 },
+        streaming_platform: { locations: 100, images: 25, views: 8, price: 2999, churn: 2 },
+        indie_filmmaker: { locations: 50, images: 20, views: 2, price: 149, churn: 10 }
+    };
+
+    if (presets[segment]) {
+        inputs.locationsPerCustomer.value = presets[segment].locations;
+        inputs.imagesPerLocation.value = presets[segment].images;
+        inputs.monthlyViewsPerImage.value = presets[segment].views;
+        inputs.pricePerCustomer.value = presets[segment].price;
+        inputs.monthlyChurn.value = presets[segment].churn;
+
+        // Update segment story
+        safeSetContent('segmentStory', segmentStories[segment] || '');
+
+        calculate();
+    }
+}
+
+// Pricing tier presets
+function updatePricingTier() {
+    const tier = inputs.pricingTier.value;
+    const freemiumSection = document.getElementById('freemiumSection');
+    const starterSection = document.getElementById('starterSection');
+    const freemiumMetrics = document.getElementById('freemiumMetrics');
+
+    const tiers = {
+        free: { price: 0, setup: 0, churn: 15, showFreemium: true, showStarter: false, showMetrics: true },
+        starter: { price: 29, setup: 0, churn: 10, showFreemium: false, showStarter: true, showMetrics: false },
+        freelancer: { price: 149, setup: 0, churn: 8, showFreemium: false, showStarter: false, showMetrics: false },
+        professional: { price: 499, setup: 500, churn: 3, showFreemium: false, showStarter: false, showMetrics: false },
+        studio: { price: 1499, setup: 1000, churn: 2, showFreemium: false, showStarter: false, showMetrics: false },
+        enterprise: { price: 3999, setup: 5000, churn: 1, showFreemium: false, showStarter: false, showMetrics: false }
+    };
+
+    if (tiers[tier]) {
+        inputs.pricePerCustomer.value = tiers[tier].price;
+        inputs.setupFee.value = tiers[tier].setup;
+        inputs.monthlyChurn.value = tiers[tier].churn;
+
+        // Show/hide freemium and starter info boxes
+        freemiumSection.style.display = tiers[tier].showFreemium ? 'block' : 'none';
+        starterSection.style.display = tiers[tier].showStarter ? 'block' : 'none';
+        freemiumMetrics.style.display = tiers[tier].showMetrics ? 'block' : 'none';
+
+        // Note: calculate() is called by the parent function (updatePricingModel or direct caller)
+    }
+}
+
+// Pricing model selector
+function updatePricingModel() {
+    const model = document.getElementById('pricingModel').value;
+    const tieredSection = document.getElementById('tieredPricingSection');
+    const usageInfo = document.getElementById('usagePricingInfo');
+    const backupInfo = document.getElementById('backupStrategyInfo');
+
+    if (model === 'tiered') {
+        tieredSection.style.display = 'block';
+        usageInfo.style.display = 'none';
+        backupInfo.style.display = 'none';
+        // Use tier pricing
+        updatePricingTier();
+    } else if (model === 'usage') {
+        tieredSection.style.display = 'none';
+        usageInfo.style.display = 'block';
+        backupInfo.style.display = 'none';
+        // Usage-based: $99 base + $0.08/GB storage + $0.12/GB bandwidth
+        inputs.pricePerCustomer.value = 99; // Base platform fee
+    } else if (model === 'hybrid') {
+        tieredSection.style.display = 'block';
+        usageInfo.style.display = 'block';
+        backupInfo.style.display = 'none';
+        // Hybrid: reduced base + usage
+    } else if (model === 'backup') {
+        tieredSection.style.display = 'block';
+        usageInfo.style.display = 'none';
+        backupInfo.style.display = 'block';
+        // Backup/Archive: 50% discount on selected tier for late-market positioning
+        // Keep current tier selection, will apply discount in revenue calculation
+        updatePricingTier();
+    }
+
+    // Single calculate() call for all pricing model changes
+    calculate();
+}
 
 function switchTab(event, tabName) {
     // Hide all tabs
@@ -1007,6 +1433,7 @@ function getInputs() {
         monthlyViewsPerImage: parseFloat(inputs.monthlyViewsPerImage.value) || 0,
         pricePerCustomer: parseFloat(inputs.pricePerCustomer.value) || 0,
         setupFee: parseFloat(inputs.setupFee.value) || 0,
+        projectFeeRevenue: parseFloat(inputs.projectFeeRevenue.value) || 0,
         monthlyChurn: parseFloat(inputs.monthlyChurn.value) || 0,
         monthlyGrowth: parseFloat(inputs.monthlyGrowth.value) || 0,
         useVercel: inputs.useVercel.checked,
@@ -1014,15 +1441,20 @@ function getInputs() {
         vercelBandwidthMultiplier: parseFloat(inputs.vercelBandwidthMultiplier.value) || 0,
         employeeSalaries: parseFloat(inputs.employeeSalaries.value) || 0,
         marketingSpend: parseFloat(inputs.marketingSpend.value) || 0,
-        otherMonthlyCosts: parseFloat(inputs.otherMonthlyCosts.value) || 0
+        otherMonthlyCosts: parseFloat(inputs.otherMonthlyCosts.value) || 0,
+        freeUsers: parseFloat(inputs.freeUsers.value) || 0,
+        conversionRate: parseFloat(inputs.conversionRate.value) || 0,
+        avgConversionTime: parseFloat(inputs.avgConversionTime.value) || 0,
+        costPerFreeUser: parseFloat(inputs.costPerFreeUser.value) || 0
     };
 }
 
 function calculateAllMetrics(currentInputs) {
     const {
         customers, locationsPerCustomer, imagesPerLocation, avgImageSize, monthlyViewsPerImage,
-        pricePerCustomer, setupFee, monthlyChurn, monthlyGrowth, useVercel, vercelTeamMembers,
-        vercelBandwidthMultiplier, employeeSalaries, marketingSpend, otherMonthlyCosts
+        pricePerCustomer, setupFee, projectFeeRevenue, monthlyChurn, monthlyGrowth, useVercel, vercelTeamMembers,
+        vercelBandwidthMultiplier, employeeSalaries, marketingSpend, otherMonthlyCosts,
+        freeUsers, conversionRate, avgConversionTime, costPerFreeUser
     } = currentInputs;
 
     // Calculate storage and bandwidth
@@ -1045,14 +1477,46 @@ function calculateAllMetrics(currentInputs) {
     const vercelBandwidthCost = vercelBandwidthOverageGB * VERCEL_BANDWIDTH_COST;
     const vercelTotalCost = vercelBaseCost + vercelBandwidthCost;
 
+    // Freemium costs (AWS free tier strategy)
+    const freemiumCosts = freeUsers * costPerFreeUser;
+    const monthlyConversions = freeUsers * (conversionRate / 100);
+    const expectedConversionRevenue = monthlyConversions * pricePerCustomer;
+    const freemiumROI = freemiumCosts > 0 ? expectedConversionRevenue / freemiumCosts : 0;
+
     // Total costs
     const otherTotalCosts = employeeSalaries + marketingSpend + otherMonthlyCosts;
-    const totalCosts = supabaseTotalCost + vercelTotalCost + otherTotalCosts;
+    const totalCosts = supabaseTotalCost + vercelTotalCost + otherTotalCosts + freemiumCosts;
     const fixedCosts = SUPABASE_PRO_BASE + vercelBaseCost + employeeSalaries + otherMonthlyCosts;
-    const variableCosts = storageCost + egressCost + vercelBandwidthCost + marketingSpend;
+    const variableCosts = storageCost + egressCost + vercelBandwidthCost + marketingSpend + freemiumCosts;
 
-    // Revenue calculations
-    const monthlyRevenue = customers * pricePerCustomer;
+    // Revenue calculations - handle different pricing models
+    const pricingModel = inputs.pricingModel ? inputs.pricingModel.value : 'tiered';
+    let monthlyRevenue;
+
+    if (pricingModel === 'usage') {
+        // AWS-style usage-based pricing
+        // Calculate per-customer usage charges (assume equal usage if individual data not available)
+        const perCustomerStorageGB = customers > 0 ? totalStorageGB / customers : 0;
+        const perCustomerBandwidthGB = customers > 0 ? totalImageBandwidthGB / customers : 0;
+        const usageStorageRevenue = customers * perCustomerStorageGB * USAGE_STORAGE_PER_GB;
+        const usageBandwidthRevenue = customers * perCustomerBandwidthGB * USAGE_BANDWIDTH_PER_GB;
+        const baseFeeRevenue = USAGE_BASE_FEE * customers;
+        monthlyRevenue = baseFeeRevenue + usageStorageRevenue + usageBandwidthRevenue + projectFeeRevenue;
+    } else if (pricingModel === 'hybrid') {
+        // Hybrid: 50% discount on base subscription fee + usage charges for aggregate usage
+        const baseRevenue = customers * pricePerCustomer * 0.5;
+        const usageStorageRevenue = totalStorageGB * USAGE_STORAGE_PER_GB * 0.5;
+        const usageBandwidthRevenue = totalImageBandwidthGB * USAGE_BANDWIDTH_PER_GB * 0.5;
+        monthlyRevenue = baseRevenue + usageStorageRevenue + usageBandwidthRevenue + projectFeeRevenue;
+    } else if (pricingModel === 'backup') {
+        // Backup/Archive: IBM Cloud strategy - 50% discount positioning as "backup" to existing systems
+        // Customers sync their primary system with us at half price, then we become primary over 6-12 months
+        monthlyRevenue = (customers * pricePerCustomer * 0.5) + projectFeeRevenue;
+    } else {
+        // Tiered subscription (traditional SaaS)
+        monthlyRevenue = (customers * pricePerCustomer) + projectFeeRevenue;
+    }
+
     const netProfit = monthlyRevenue - totalCosts;
     const profitMargin = monthlyRevenue > 0 ? (netProfit / monthlyRevenue * 100) : 0;
 
@@ -1085,11 +1549,13 @@ function calculateAllMetrics(currentInputs) {
         storageOverageGB, storageCost, egressOverageGB, egressCost, supabaseTotalCost,
         vercelBaseCost, vercelBandwidthOverageGB, vercelBandwidthCost, vercelTotalCost,
         otherTotalCosts, totalCosts, fixedCosts, variableCosts,
+        freemiumCosts, monthlyConversions, expectedConversionRevenue, freemiumROI,
         monthlyRevenue, netProfit, profitMargin,
         costPerCustomer, profitPerCustomer, unitEconomicsRatio,
         avgCustomerLifetimeMonths, ltv, newCustomers, cac, ltvCacRatio, cacPayback,
         infrastructureCosts, grossMargin,
-        breakEvenCustomers, breakEvenMRR, monthsToBreakEven
+        breakEvenCustomers, breakEvenMRR, monthsToBreakEven,
+        freeUsers, conversionRate
     };
 }
 
@@ -1146,12 +1612,12 @@ function updateCalculatorTab(metrics) {
     document.getElementById('totalCosts').textContent = totalCosts.toFixed(2);
 
     // Revenue
-    document.getElementById('monthlyRevenue').textContent = monthlyRevenue.toFixed(0);
-    document.getElementById('customerCount').textContent = customers;
-    document.getElementById('priceDisplay').textContent = pricePerCustomer.toFixed(0);
+    document.getElementById('monthlyRevenue').textContent = integer.format(monthlyRevenue);
+    document.getElementById('customerCount').textContent = integer.format(customers);
+    document.getElementById('priceDisplay').textContent = integer.format(pricePerCustomer);
 
     const netProfitElement = document.getElementById('netProfit');
-    netProfitElement.textContent = '$' + netProfit.toFixed(0);
+    netProfitElement.textContent = money.format(netProfit);
     netProfitElement.style.color = netProfit >= 0 ? '#28a745' : '#dc3545';
 
     document.getElementById('profitMargin').textContent = profitMargin.toFixed(1) + '%';
@@ -1226,23 +1692,23 @@ function updateAnalysisTab(metrics) {
     }
 
     // Update KPIs
-    document.getElementById('arr').textContent = (monthlyRevenue * 12).toFixed(0);
-    document.getElementById('ltv').textContent = ltv.toFixed(0);
+    document.getElementById('arr').textContent = integer.format(monthlyRevenue * 12);
+    document.getElementById('ltv').textContent = integer.format(ltv);
     document.getElementById('cacPayback').textContent = !isNaN(cacPayback) ? cacPayback.toFixed(1) + ' mo' : 'N/A';
     document.getElementById('ltvCacRatio').textContent = !isNaN(ltvCacRatio) ? ltvCacRatio.toFixed(1) + ':1' : 'N/A';
     document.getElementById('grossMargin').textContent = grossMargin.toFixed(1) + '%';
-    document.getElementById('burnRate').textContent = netProfit < 0 ? '$' + Math.abs(netProfit).toFixed(0) : '$0';
+    document.getElementById('burnRate').textContent = netProfit < 0 ? money.format(Math.abs(netProfit)) : '$0';
 
     // 12-month projection
-    document.getElementById('projStartCustomers').textContent = customers.toFixed(0);
-    document.getElementById('projEndCustomers').textContent = projectedCustomers.toFixed(0);
-    document.getElementById('projNewCustomers').textContent = newCustomersTotal.toFixed(0);
-    document.getElementById('projChurnedCustomers').textContent = churnedCustomersTotal.toFixed(0);
-    document.getElementById('projRevenue').textContent = totalRevenue.toFixed(0);
-    document.getElementById('projCosts').textContent = totalProjectedCost.toFixed(0);
+    document.getElementById('projStartCustomers').textContent = integer.format(customers);
+    document.getElementById('projEndCustomers').textContent = integer.format(projectedCustomers);
+    document.getElementById('projNewCustomers').textContent = integer.format(newCustomersTotal);
+    document.getElementById('projChurnedCustomers').textContent = integer.format(churnedCustomersTotal);
+    document.getElementById('projRevenue').textContent = integer.format(totalRevenue);
+    document.getElementById('projCosts').textContent = integer.format(totalProjectedCost);
     const projProfit = totalRevenue - totalProjectedCost;
     const projProfitElement = document.getElementById('projProfit');
-    projProfitElement.textContent = '$' + projProfit.toFixed(0);
+    projProfitElement.textContent = money.format(projProfit);
     projProfitElement.style.color = projProfit >= 0 ? '#28a745' : '#dc3545';
 
     // Cost structure
@@ -1375,6 +1841,24 @@ function updateRecommendations(metrics) {
     } = metrics;
 
     const vercelBWCost = metrics.vercelBandwidthCost;
+
+    // Business classification
+    const classifications = classifyBusiness(metrics);
+    const classText = `A <strong>${classifications.join(', ')}</strong> business.`;
+    document.getElementById('classificationText').innerHTML = classText;
+
+    // Color the classification box based on profitability
+    const classBox = document.getElementById('businessClassification');
+    if (profitMargin >= 20) {
+        classBox.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+    } else if (profitMargin >= 0) {
+        classBox.style.background = 'linear-gradient(135deg, #ffc107 0%, #ff9800 100%)';
+    } else {
+        classBox.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+    }
+
+    // Investor one-liner
+    document.getElementById('investorOneLiner').textContent = buildInvestorOneLiner(metrics);
 
     // Health metrics
     let healthHTML = '<div class="kpi-grid">';
