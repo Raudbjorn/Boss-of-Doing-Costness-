@@ -16,7 +16,7 @@ ipywidgets==7.6.0
 ipykernel==6.0.0
 
 # Optional: For exporting reports
-nbconvert==6.1.0
+nbconvert==6.5.1
 
 # Installation instructions:
 # pip install -r requirements.txt
